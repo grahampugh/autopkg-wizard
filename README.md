@@ -60,19 +60,25 @@ The landing page shows a dashboard with counts of repos, recipes, and overrides,
 
 ## Building
 
-Build the `.app` bundle using the included script:
+Build using `make`:
 
 ```bash
-./build_app.sh           # Debug build
-./build_app.sh release   # Release build
+make              # Debug build (.app only)
+make release      # Release build (.app + installer .pkg)
+make clean        # Remove all build artifacts
 ```
 
-The app bundle is output to `.build/debug/AutoPkgWizard.app` (or `.build/release/` for release builds).
+The `make release` target:
+1. Compiles an optimised release build via Swift Package Manager
+2. Assembles the `.app` bundle
+3. Creates a macOS distribution installer package (`AutoPkgWizard-<version>.pkg`) that installs the app into `/Applications`
+4. Opens the output folder in Finder
 
 Alternatively, build with Swift Package Manager directly:
 
 ```bash
-swift build
+swift build                  # Debug build
+./build_app.sh release       # Release .app bundle only
 ```
 
 ## Architecture
