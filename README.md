@@ -1,6 +1,6 @@
 # AutoPkg Wizard
 
-A modern macOS SwiftUI application for managing [AutoPkg](https://github.com/autopkg/autopkg). AutoPkg Wizard provides a graphical interface for common AutoPkg tasks, serving as a modern alternative to [AutoPkgr](https://github.com/lindegroup/autopkgr).
+A modern macOS SwiftUI application for managing [AutoPkg](https://github.com/autopkg/autopkg). AutoPkg Wizard provides a graphical interface for common AutoPkg tasks, created with eternal love towards the venerable [AutoPkgr](https://github.com/lindegroup/autopkgr).
 
 ![Overview](images/Overview.png)
 
