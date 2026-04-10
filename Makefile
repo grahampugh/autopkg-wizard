@@ -1,8 +1,9 @@
 # Makefile for AutoPkg Wizard
 # Usage:
 #   make              - Debug build (.app only)
-#   make release      - Release build (.app + installer .pkg), opens output folder
+#   make release      - Release build (.app + .pkg + GitHub pre-release)
 #   make pkg          - Build installer .pkg from existing release .app
+#   make github       - Create/update GitHub pre-release from existing .pkg
 #   make clean        - Remove build artifacts
 
 SHELL        := /bin/bash
@@ -10,15 +11,17 @@ APP_NAME     := AutoPkgWizard
 BUNDLE_ID    := com.github.grahampugh.AutoPkgWizard
 INFO_PLIST   := SupportingFiles/Info.plist
 VERSION      := $(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$(INFO_PLIST)")
+TAG          := v$(VERSION)
 
 BUILD_DIR    := .build
 OUTPUT_DIR   := output
 RELEASE_APP  := $(BUILD_DIR)/release/$(APP_NAME).app
 DEBUG_APP    := $(BUILD_DIR)/debug/$(APP_NAME).app
 PKG_NAME     := $(APP_NAME)-$(VERSION).pkg
+PKG_PATH     := $(OUTPUT_DIR)/$(PKG_NAME)
 COMPONENT    := $(OUTPUT_DIR)/$(APP_NAME)-component.pkg
 
-.PHONY: all debug release pkg clean clean-output _pkg
+.PHONY: all debug release pkg github clean clean-output _pkg
 
 # Default target: debug build
 all: debug
@@ -29,12 +32,15 @@ debug:
 	@./build_app.sh
 	@echo "==> Debug app ready: $(DEBUG_APP)"
 
-# --- Release build + installer package -------------------------------------
+# --- Release build + installer package + GitHub release --------------------
 release: clean-output
 	@echo "==> Building $(APP_NAME) (release)…"
 	@./build_app.sh release
 	@echo ""
 	@$(MAKE) --no-print-directory _pkg
+	@echo ""
+	@$(MAKE) --no-print-directory github
+	@echo ""
 	@echo "==> Opening output folder…"
 	@open "$(OUTPUT_DIR)"
 
@@ -48,6 +54,36 @@ pkg:
 	@$(MAKE) --no-print-directory _pkg
 	@echo "==> Opening output folder…"
 	@open "$(OUTPUT_DIR)"
+
+# --- Create / update GitHub pre-release ------------------------------------
+github:
+	@if [ ! -f "$(PKG_PATH)" ]; then \
+		echo "ERROR: Package not found at $(PKG_PATH)." >&2; \
+		echo "       Run 'make release' first." >&2; \
+		exit 1; \
+	fi
+	@echo "==> Preparing GitHub pre-release $(TAG)…"
+	@# Ensure all changes are committed
+	@if [ -n "$$(git status --porcelain)" ]; then \
+		echo "WARNING: Uncommitted changes detected. Committing…"; \
+		git add -A && git commit -m "Release $(VERSION)"; \
+	fi
+	@# Delete existing release for this tag (if any)
+	@if gh release view "$(TAG)" >/dev/null 2>&1; then \
+		echo "==> Deleting existing release $(TAG)…"; \
+		gh release delete "$(TAG)" --cleanup-tag --yes; \
+		git tag -d "$(TAG)" 2>/dev/null || true; \
+	fi
+	@# Create the pre-release with the .pkg attached
+	@echo "==> Creating GitHub pre-release $(TAG)…"
+	@git tag "$(TAG)"
+	@git push origin "$(TAG)"
+	@gh release create "$(TAG)" \
+		"$(PKG_PATH)#$(PKG_NAME)" \
+		--title "$(APP_NAME) $(VERSION)" \
+		--prerelease \
+		--generate-notes
+	@echo "==> GitHub pre-release $(TAG) created with $(PKG_NAME) attached."
 
 # --- Internal: create the .pkg ---------------------------------------------
 _pkg:
@@ -64,9 +100,9 @@ _pkg:
 		--package "$(COMPONENT)" \
 		--identifier "$(BUNDLE_ID)" \
 		--version "$(VERSION)" \
-		"$(OUTPUT_DIR)/$(PKG_NAME)"
+		"$(PKG_PATH)"
 	@rm -f "$(COMPONENT)"
-	@echo "==> Installer package ready: $(OUTPUT_DIR)/$(PKG_NAME)"
+	@echo "==> Installer package ready: $(PKG_PATH)"
 
 # --- Clean -----------------------------------------------------------------
 clean:
