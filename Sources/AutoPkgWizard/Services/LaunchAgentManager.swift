@@ -71,10 +71,15 @@ struct LaunchAgentManager: Sendable {
             ]
         }
 
+        // Build program arguments including user-configured run arguments
+        let argsConfig = ArgumentsConfig.load()
+        var programArgs = [autoPkgPath, "run", "--recipe-list", recipeListPath]
+        programArgs.append(contentsOf: argsConfig.buildArguments())
+
         // Build the launch agent plist
         let plist: [String: Any] = [
             "Label": agentLabel,
-            "ProgramArguments": [autoPkgPath, "run", "--recipe-list", recipeListPath, "-v"],
+            "ProgramArguments": programArgs,
             "StartCalendarInterval": intervals,
             "StandardOutPath": NSString(string: "~/Library/Logs/\(agentLabel).log").expandingTildeInPath,
             "StandardErrorPath": NSString(string: "~/Library/Logs/\(agentLabel).error.log").expandingTildeInPath,

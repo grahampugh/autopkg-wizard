@@ -6,6 +6,7 @@ enum SidebarItem: String, CaseIterable, Identifiable {
     case repos = "Repos"
     case recipes = "Recipes"
     case overrides = "Overrides"
+    case arguments = "Arguments"
     case schedule = "Schedule"
 
     var id: String { rawValue }
@@ -16,6 +17,7 @@ enum SidebarItem: String, CaseIterable, Identifiable {
         case .repos: "folder"
         case .recipes: "list.bullet.rectangle"
         case .overrides: "doc.on.doc"
+        case .arguments: "terminal"
         case .schedule: "clock"
         }
     }

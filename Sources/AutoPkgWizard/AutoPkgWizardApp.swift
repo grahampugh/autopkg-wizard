@@ -23,6 +23,8 @@ struct AutoPkgWizardApp: App {
                         RecipesView()
                     case .overrides:
                         OverridesView()
+                    case .arguments:
+                        ArgumentsView()
                     case .schedule:
                         ScheduleView()
                     case nil:

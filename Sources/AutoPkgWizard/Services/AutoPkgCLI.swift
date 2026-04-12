@@ -128,12 +128,18 @@ final class AutoPkgCLI {
     /// Run recipes from the configured recipe list (streaming)
     func runRecipeList(recipeListPath: String? = nil) -> (stream: AsyncStream<String>, task: Task<Int32, Never>) {
         let path = recipeListPath ?? self.recipeListPath
-        return runStreaming(arguments: ["run", "--recipe-list", path, "-v"])
+        let config = ArgumentsConfig.load()
+        var args = ["run", "--recipe-list", path]
+        args.append(contentsOf: config.buildArguments())
+        return runStreaming(arguments: args)
     }
 
     /// Run a single recipe by name (streaming)
     func runRecipe(_ name: String) -> (stream: AsyncStream<String>, task: Task<Int32, Never>) {
-        runStreaming(arguments: ["run", name, "-v"])
+        let config = ArgumentsConfig.load()
+        var args = ["run", name]
+        args.append(contentsOf: config.buildArguments())
+        return runStreaming(arguments: args)
     }
 
     /// Get info about a recipe
