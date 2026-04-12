@@ -91,8 +91,21 @@ struct ScheduleView: View {
 
                         if let lastRun = viewModel.lastRunDate {
                             LabeledContent("Last Run") {
-                                Text(lastRun, style: .relative)
-                                + Text(" ago")
+                                HStack(spacing: 8) {
+                                    Text(lastRun, style: .relative)
+                                    + Text(" ago")
+
+                                    if viewModel.lastRunSummary != nil {
+                                        Button {
+                                            viewModel.showSummary = true
+                                        } label: {
+                                            Image(systemName: "info.circle")
+                                                .foregroundStyle(.blue)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .help("View run summary")
+                                    }
+                                }
                             }
                             .font(.callout)
                         }
@@ -133,6 +146,11 @@ struct ScheduleView: View {
         } message: {
             Text(viewModel.errorMessage ?? "An unknown error occurred.")
         }
+        .sheet(isPresented: $viewModel.showSummary) {
+            if let summary = viewModel.lastRunSummary {
+                RunSummarySheet(summary: summary)
+            }
+        }
     }
 
     // MARK: - Day Selector
@@ -172,5 +190,192 @@ struct DayToggleButton: View {
                 )
         }
         .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Run Summary Sheet
+
+struct RunSummarySheet: View {
+    let summary: RunSummary
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Header
+            HStack {
+                Image(systemName: "doc.text.magnifyingglass")
+                    .font(.title2)
+                    .foregroundStyle(.blue)
+                Text("Run Summary")
+                    .font(.headline)
+                Spacer()
+                Text(summary.date, style: .date)
+                + Text(" at ")
+                + Text(summary.date, style: .time)
+            }
+            .foregroundStyle(.secondary)
+            .padding()
+
+            Divider()
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    // Failed Recipes
+                    if !summary.failedRecipes.isEmpty {
+                        summarySection(
+                            title: "Failed Recipes",
+                            icon: "xmark.circle.fill",
+                            iconColor: .red,
+                            count: summary.failedRecipes.count
+                        ) {
+                            ForEach(Array(summary.failedRecipes.enumerated()), id: \.offset) { _, recipe in
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(recipe.name)
+                                        .font(.body.weight(.medium))
+                                    if !recipe.reason.isEmpty {
+                                        Text(recipe.reason)
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Downloaded Items
+                    if !summary.downloadedItems.isEmpty {
+                        summarySection(
+                            title: "New Downloads",
+                            icon: "arrow.down.circle.fill",
+                            iconColor: .blue,
+                            count: summary.downloadedItems.count
+                        ) {
+                            ForEach(Array(summary.downloadedItems.enumerated()), id: \.offset) { _, item in
+                                Text(item.path)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .textSelection(.enabled)
+                            }
+                        }
+                    }
+
+                    // Built Packages
+                    if !summary.builtPackages.isEmpty {
+                        summarySection(
+                            title: "Packages Built",
+                            icon: "shippingbox.fill",
+                            iconColor: .green,
+                            count: summary.builtPackages.count
+                        ) {
+                            ForEach(Array(summary.builtPackages.enumerated()), id: \.offset) { _, pkg in
+                                VStack(alignment: .leading, spacing: 2) {
+                                    HStack {
+                                        Text(pkg.identifier)
+                                            .font(.body.weight(.medium))
+                                        if !pkg.version.isEmpty {
+                                            Text("v\(pkg.version)")
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                                .padding(.horizontal, 6)
+                                                .padding(.vertical, 2)
+                                                .background(Color.green.opacity(0.1))
+                                                .clipShape(Capsule())
+                                        }
+                                    }
+                                    if !pkg.path.isEmpty {
+                                        Text(pkg.path)
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                            .textSelection(.enabled)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Nothing to report
+                    if summary.isEmpty {
+                        HStack {
+                            Spacer()
+                            VStack(spacing: 8) {
+                                Image(systemName: "checkmark.circle")
+                                    .font(.largeTitle)
+                                    .foregroundStyle(.green)
+                                Text("Nothing to report")
+                                    .font(.headline)
+                                Text("No failures, downloads, or new packages.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                        }
+                        .padding(.vertical, 20)
+                    }
+
+                    // Raw output toggle
+                    DisclosureGroup("Raw Output") {
+                        Text(summary.rawText)
+                            .font(.system(.caption, design: .monospaced))
+                            .textSelection(.enabled)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(8)
+                            .background(Color(nsColor: .textBackgroundColor))
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
+                .padding()
+            }
+
+            Divider()
+
+            // Footer
+            HStack {
+                Button("Copy") {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(summary.rawText, forType: .string)
+                }
+                .buttonStyle(.bordered)
+
+                Spacer()
+
+                Button("Done") {
+                    dismiss()
+                }
+                .buttonStyle(.borderedProminent)
+                .keyboardShortcut(.cancelAction)
+            }
+            .padding()
+        }
+        .frame(minWidth: 550, maxWidth: 550, minHeight: 400, maxHeight: 600)
+    }
+
+    private func summarySection<Content: View>(
+        title: String,
+        icon: String,
+        iconColor: Color,
+        count: Int,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: icon)
+                    .foregroundStyle(iconColor)
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                Text("(\(count))")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                content()
+            }
+            .padding(10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color(nsColor: .controlBackgroundColor))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
     }
 }

@@ -13,6 +13,8 @@ final class ScheduleViewModel {
     var nextRun: Date?
     var agentLoaded: Bool = false
     var lastRunDate: Date?
+    var lastRunSummary: RunSummary?
+    var showSummary = false
 
     init() {
         schedule = LaunchAgentManager.loadScheduleConfig()
@@ -104,6 +106,19 @@ final class ScheduleViewModel {
             lastRunDate = modDate
         } else {
             lastRunDate = nil
+        }
+
+        // Load the most recent summary — prefer the saved JSON (from manual runs),
+        // but fall back to parsing the scheduled log file
+        if let saved = RunSummary.load() {
+            if let logSummary = RunSummary.loadFromScheduledLog() {
+                // Use whichever is more recent
+                lastRunSummary = saved.date > logSummary.date ? saved : logSummary
+            } else {
+                lastRunSummary = saved
+            }
+        } else {
+            lastRunSummary = RunSummary.loadFromScheduledLog()
         }
     }
 }

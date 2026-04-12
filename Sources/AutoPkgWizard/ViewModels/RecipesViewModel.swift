@@ -295,6 +295,10 @@ final class RecipesViewModel {
                 runLog.append("")
                 runLog.append("⚠️ Recipe run finished with exit code \(exitCode).")
             }
+            // Extract and save the run summary
+            if let summary = RunSummary.extract(from: runLog) {
+                summary.save()
+            }
             isRunning = false
         }
     }
@@ -318,6 +322,10 @@ final class RecipesViewModel {
             } else {
                 runLog.append("")
                 runLog.append("⚠️ \(name) finished with exit code \(exitCode).")
+            }
+            // Extract and save the run summary
+            if let summary = RunSummary.extract(from: runLog) {
+                summary.save()
             }
             isRunning = false
             runningRecipe = nil
