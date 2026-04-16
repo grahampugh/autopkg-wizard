@@ -54,6 +54,16 @@ struct AutoPkgWizardApp: App {
             } message: {
                 Text("AutoPkg was not found at \(autoPkgCLI.autoPkgPath). Please install AutoPkg to use this application. You can configure the path in Settings.")
             }
+            .alert("AutoPkg Not Responding", isPresented: $autoPkgCLI.showTimeoutAlert) {
+                Button("Wait") {
+                    autoPkgCLI.dismissTimeout()
+                }
+                Button("Cancel", role: .destructive) {
+                    autoPkgCLI.cancelStalledCommand()
+                }
+            } message: {
+                Text("AutoPkg does not appear to be responding.\n\n\(autoPkgCLI.stalledCommandDescription)")
+            }
         }
         .defaultSize(width: 900, height: 600)
 
