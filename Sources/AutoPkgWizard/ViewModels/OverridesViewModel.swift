@@ -53,6 +53,17 @@ final class OverridesViewModel {
         }
     }
 
+    func saveOverrideContents() {
+        guard let override = selectedOverride else { return }
+        do {
+            try selectedOverrideContents.write(toFile: override.filePath, atomically: true, encoding: .utf8)
+            statusMessage = "Override saved."
+        } catch {
+            errorMessage = "Failed to save override: \(error.localizedDescription)"
+            showError = true
+        }
+    }
+
     func verifyTrust(for override: AutoPkgOverride) async {
         let name = override.recipeName
         trustStatus[override.id] = .verifying

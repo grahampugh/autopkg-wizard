@@ -8,10 +8,10 @@ struct OverridesView: View {
     var body: some View {
         HSplitView {
             overridesList
-                .frame(minWidth: 250)
+                .frame(minWidth: 250, maxHeight: .infinity, alignment: .top)
 
             detailPane
-                .frame(minWidth: 300)
+                .frame(minWidth: 300, maxHeight: .infinity)
         }
         .navigationTitle("Overrides")
         .toolbar {
@@ -43,6 +43,9 @@ struct OverridesView: View {
         .onAppear {
             viewModel.loadOverrides()
         }
+        .onReceive(NotificationCenter.default.publisher(for: .overridesDidChange)) { _ in
+            viewModel.loadOverrides()
+        }
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -53,7 +56,7 @@ struct OverridesView: View {
     // MARK: - Override List
 
     private var overridesList: some View {
-        Group {
+        VStack(spacing: 0) {
             if viewModel.overrides.isEmpty {
                 ContentUnavailableView(
                     "No Overrides",
@@ -61,8 +64,7 @@ struct OverridesView: View {
                     description: Text("No recipe overrides found in\n\(AutoPkgCLI.shared.overridesDirectory)")
                 )
             } else {
-                VStack(spacing: 0) {
-                    List(viewModel.overrides, selection: Binding(
+                List(viewModel.overrides, selection: Binding(
                         get: { viewModel.selectedOverride },
                         set: { override in
                             if !isEditing, let override {
@@ -117,9 +119,11 @@ struct OverridesView: View {
                             }
                         }
                         .tag(override)
-                    }
+                }
+                .listStyle(.plain)
+                .frame(maxHeight: .infinity, alignment: .top)
 
-                    if isEditing {
+                if isEditing {
                         HStack {
                             Button(role: .destructive) {
                                 deleteSelectedOverrides()
@@ -137,7 +141,6 @@ struct OverridesView: View {
                         .padding(.horizontal)
                         .padding(.vertical, 8)
                         .background(.bar)
-                    }
                 }
             }
         }
@@ -149,13 +152,18 @@ struct OverridesView: View {
         Group {
             if let override = viewModel.selectedOverride {
                 VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text(override.fileName)
-                            .font(.headline)
-                        Spacer()
+                    // File name
+                    Text(override.fileName)
+                        .font(.headline)
+                        .padding(.horizontal)
+                        .padding(.top, 8)
 
+                    // Trust info and action buttons
+                    HStack {
                         let trustState = viewModel.trustStatus[override.id] ?? .unknown
                         trustBadge(trustState)
+
+                        Spacer()
 
                         Button("Verify") {
                             Task { await viewModel.verifyTrust(for: override) }
@@ -168,23 +176,33 @@ struct OverridesView: View {
                         }
                         .buttonStyle(.bordered)
                         .controlSize(.small)
+
+                        Button("Save") {
+                            viewModel.saveOverrideContents()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
+                        .keyboardShortcut("s", modifiers: .command)
                     }
                     .padding(.horizontal)
-                    .padding(.top, 8)
+
+                    if let status = viewModel.statusMessage {
+                        Text(status)
+                            .font(.caption)
+                            .foregroundStyle(.green)
+                            .padding(.horizontal)
+                    }
 
                     Divider()
 
-                    ScrollView {
-                        Text(viewModel.selectedOverrideContents)
-                            .font(.system(.caption, design: .monospaced))
-                            .textSelection(.enabled)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(8)
-                    }
-                    .background(Color(nsColor: .textBackgroundColor))
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
-                    .padding(.horizontal)
-                    .padding(.bottom, 8)
+                    TextEditor(text: $viewModel.selectedOverrideContents)
+                        .font(.system(.caption, design: .monospaced))
+                        .scrollContentBackground(.visible)
+                        .padding(4)
+                        .background(Color(nsColor: .textBackgroundColor))
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                        .padding(.horizontal)
+                        .padding(.bottom, 8)
                 }
             } else {
                 ContentUnavailableView(

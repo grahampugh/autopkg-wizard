@@ -122,6 +122,7 @@ final class RecipesViewModel {
         do {
             _ = try await cli.makeOverride(recipeName)
             loadOverrides()
+            NotificationCenter.default.post(name: .overridesDidChange, object: nil)
         } catch {
             errorMessage = "Failed to create override for \(recipeName): \(error.localizedDescription)"
             showError = true
@@ -171,6 +172,7 @@ final class RecipesViewModel {
                 do {
                     _ = try await cli.makeOverride(Self.makeCatalogsRecipe)
                     loadOverrides()
+                    NotificationCenter.default.post(name: .overridesDidChange, object: nil)
                 } catch {
                     // Override creation may fail if one already exists on disk
                     // but wasn't in our cache – reload and check

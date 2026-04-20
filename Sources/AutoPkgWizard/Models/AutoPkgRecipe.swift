@@ -54,11 +54,16 @@ struct AutoPkgOverride: Identifiable, Hashable, Sendable {
     let filePath: String
     let fileName: String
 
-    /// The recipe name derived from the file name (strip extension)
+    /// The recipe name derived from the file name (strip recipe suffixes)
     var recipeName: String {
-        let name = (fileName as NSString).deletingPathExtension
-        // .recipe files may have a double extension like Firefox.download.recipe
-        return name
+        var name = fileName
+        for suffix in [".recipe.yaml", ".recipe.plist", ".recipe"] {
+            if name.hasSuffix(suffix) {
+                name = String(name.dropLast(suffix.count))
+                return name
+            }
+        }
+        return (name as NSString).deletingPathExtension
     }
 
     /// Read the file contents for display
