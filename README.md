@@ -9,6 +9,11 @@ A modern macOS SwiftUI application for managing [AutoPkg](https://github.com/aut
 - macOS 15.0 (Sequoia) or later
 - [AutoPkg](https://github.com/autopkg/autopkg/releases) installed at `/usr/local/bin/autopkg`
 
+## Installation
+
+- Grab the `dmg` or `pkg` from the latest release on the [Releases](https://github.com/grahampugh/AutoPkgWizard/releases) page.
+- Note that the app is not currently signed or notarized. You may need to allow the package to be launched via System Settings > Security & Privacy.
+
 ## Features
 
 ### Overview
@@ -46,7 +51,22 @@ The landing page shows a dashboard with counts of repos, recipes, and overrides,
 - View override file contents in a detail pane
 - Verify and update trust info per override with status indicators
 - Reveal override files in Finder
-- Edit mode with multi-select for bulk deletion
+- Syntax-highlighted viewer for override contents with support for YAML and PLIST formats
+- Edit and save overrides directly inline, with real-time validation on save.
+- List edit mode with multi-select for bulk deletion
+
+### Arguments
+
+![Arguments](images/Arguments.png)
+
+- Set recipe run verbosity level (default: Normal (`-v`))
+- Add pre- and post-processors to be run before/after every recipe.
+
+![Arguments](images/Arguments 2.png)
+
+- Add any number of key-value pairs that will be passed as `--key value` arguments to every recipe run, with support for boolean flags (e.g. `0`/`1` or `true`/`false`)
+- Add source packages that can be passed as `--pkg` arguments, which can be stored and selected for use.
+- Command preview showing exactly what autopkg command will be run.
 
 ### Schedule
 
