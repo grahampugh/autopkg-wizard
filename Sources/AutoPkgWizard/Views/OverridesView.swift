@@ -193,16 +193,30 @@ struct OverridesView: View {
                             .padding(.horizontal)
                     }
 
+                    if let validationError = viewModel.validationError {
+                        HStack(spacing: 4) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundStyle(.red)
+                            Text(validationError)
+                                .font(.caption)
+                                .foregroundStyle(.red)
+                        }
+                        .padding(.horizontal)
+                    }
+
                     Divider()
 
-                    TextEditor(text: $viewModel.selectedOverrideContents)
-                        .font(.system(.caption, design: .monospaced))
-                        .scrollContentBackground(.visible)
-                        .padding(4)
-                        .background(Color(nsColor: .textBackgroundColor))
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                        .padding(.horizontal)
-                        .padding(.bottom, 8)
+                    SyntaxHighlightEditor(
+                        text: $viewModel.selectedOverrideContents,
+                        language: OverrideFileType.detect(
+                            fileName: override.fileName,
+                            content: viewModel.selectedOverrideContents
+                        ).highlightrLanguage
+                    )
+                    .id(override.id)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .padding(.horizontal)
+                    .padding(.bottom, 8)
                 }
             } else {
                 ContentUnavailableView(
