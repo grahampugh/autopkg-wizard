@@ -15,10 +15,7 @@ let package = Package(
         .executableTarget(
             name: "AutoPkgWizard",
             dependencies: ["Highlightr", "Yams"],
-            path: "Sources/AutoPkgWizard",
-            resources: [
-                .process("Resources")
-            ]
+            path: "Sources/AutoPkgWizard"
         )
     ]
 )

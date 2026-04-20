@@ -10,7 +10,6 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 APP_NAME="AutoPkgWizard"
 BUNDLE_NAME="${APP_NAME}.app"
-RESOURCES_DIR="${SCRIPT_DIR}/Sources/${APP_NAME}/Resources"
 INFO_PLIST="${SCRIPT_DIR}/SupportingFiles/Info.plist"
 
 # Determine build configuration
@@ -61,8 +60,9 @@ else
 fi
 
 # Copy entitlements (for reference, not embedded in binary)
-if [[ -f "${RESOURCES_DIR}/${APP_NAME}.entitlements" ]]; then
-    cp "${RESOURCES_DIR}/${APP_NAME}.entitlements" "${RES_DIR}/"
+ENTITLEMENTS_FILE="${SCRIPT_DIR}/SupportingFiles/${APP_NAME}.entitlements"
+if [[ -f "${ENTITLEMENTS_FILE}" ]]; then
+    cp "${ENTITLEMENTS_FILE}" "${RES_DIR}/"
 fi
 
 # Copy app icon
@@ -73,11 +73,26 @@ else
     echo "WARNING: Icon file not found at ${ICON_FILE}" >&2
 fi
 
-# Copy any Swift Package Manager processed resources (e.g. bundles)
-RESOURCE_BUNDLE="${BUILD_DIR}/${APP_NAME}_${APP_NAME}.bundle"
-if [[ -d "${RESOURCE_BUNDLE}" ]]; then
-    cp -R "${RESOURCE_BUNDLE}" "${RES_DIR}/"
+# Copy app logo image
+LOGO_FILE="${SCRIPT_DIR}/SupportingFiles/autopkg_logo.png"
+if [[ -f "${LOGO_FILE}" ]]; then
+    cp "${LOGO_FILE}" "${RES_DIR}/autopkg_logo.png"
 fi
+
+# Copy third-party SPM resource bundles (e.g. Highlightr).
+# SPM's generated Bundle.module accessor looks for bundles at
+# Bundle.main.bundleURL/<name>.bundle (the .app root for macOS apps).
+# This is an SPM limitation — it doesn't account for .app bundle layout.
+for RESOURCE_BUNDLE in "${BUILD_DIR}"/*.bundle; do
+    if [[ -d "${RESOURCE_BUNDLE}" ]]; then
+        BUNDLE_BASENAME="$(basename "${RESOURCE_BUNDLE}")"
+        # Skip our own resource bundle (no longer generated)
+        if [[ "${BUNDLE_BASENAME}" == "${APP_NAME}_${APP_NAME}.bundle" ]]; then
+            continue
+        fi
+        cp -R "${RESOURCE_BUNDLE}" "${BUNDLE_DIR}/${BUNDLE_BASENAME}"
+    fi
+done
 
 echo "==> Built: ${BUNDLE_DIR}"
 echo ""

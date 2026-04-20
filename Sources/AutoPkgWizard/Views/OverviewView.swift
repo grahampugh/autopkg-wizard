@@ -9,7 +9,7 @@ struct OverviewView: View {
             VStack(spacing: 24) {
                 // Header
                 VStack(spacing: 8) {
-                    if let url = Bundle.module.url(forResource: "autopkg_logo", withExtension: "png"),
+                    if let url = Bundle.main.url(forResource: "autopkg_logo", withExtension: "png"),
                        let nsImage = NSImage(contentsOf: url) {
                         Image(nsImage: nsImage)
                             .resizable()
