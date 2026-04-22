@@ -10,7 +10,7 @@ AutoPkg Wizard is a light-touch wrapper application, designed to use the AutoPkg
 
 You can build a recipe list within the app by searching for recipes. Once a recipe has been added to the recipe list, you can view information about the recipe, create an override, or run it individually using the inline buttons. Or, you can run all recipes in the recipe list using the main play button.
 
-Overrides can be edited within the app, or deleted. You can also amend the autopkg run verbosity, add key-value pairs, and supply paths to packages for recipes that require them. These options are suitable for running individual recipes in the list, and can be enabled or disabled without deleting them.
+Overrides can be edited within the app, or deleted. You can also amend the autopkg run verbosity, and add pre- and post-processors which will apply to all recipes. You can also add key-value pairs, and supply paths to packages for recipes that require them. These options would also apply to all recipes, but as most would be suitable for running individual recipes in the list, you can enable or disable each one without deleting them.
 
 Finally, you can schedule an automatic daily run of your recipe list, which creates a Launch Agent. 
 
