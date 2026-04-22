@@ -4,6 +4,16 @@ A modern macOS SwiftUI application for managing [AutoPkg](https://github.com/aut
 
 ![Overview](images/Overview.png)
 
+## Concept
+
+AutoPkg Wizard is a light-touch wrapper application, designed to use the AutoPkg command line functionality. It uses AutoPkg's own preferences file, meaning whatever you run at the command line will run the same via the app. An editor is provided for amending certain keys within the preferences file.
+
+You can build a recipe list within the app by searching for recipes. Once a recipe has been added to the recipe list, you can view information about the recipe, create an override, or run it individually using the inline buttons. Or, you can run all recipes in the recipe list using the main play button.
+
+Overrides can be edited within the app, or deleted. You can also amend the autopkg run verbosity, add key-value pairs, and supply paths to packages for recipes that require them. These options are suitable for running individual recipes in the list, and can be enabled or disabled without deleting them.
+
+Finally, you can schedule an automatic daily run of your recipe list, which creates a Launch Agent. 
+
 ## Requirements
 
 - macOS 26.0 or later
