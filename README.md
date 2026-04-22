@@ -95,11 +95,13 @@ Build using `make` from the repo root:
 
 ```bash
 make              # Debug build (.app only)
+make pkg          # Build installer .pkg from existing release .app
+make dmg          # Build distributable .dmg from existing release .app
 make release      # Release build (.app + .pkg + .dmg + GitHub pre-release)
 make clean        # Remove all build artifacts
 ```
 
-The `make release` target:
+The `make release` target can only be run by the repo owner or in your own fork:
 1. Compiles an optimised release build via Xcode
 2. Creates a macOS distribution installer package (`AutoPkgWizard-<version>.pkg`) that installs the app into `/Applications`
 3. Creates a distributable disk image (`AutoPkgWizard-<version>.dmg`)
