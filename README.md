@@ -114,18 +114,3 @@ xcodebuild -project "AutoPkg Wizard/AutoPkg Wizard.xcodeproj" \
            -configuration Release \
            build
 ```
-
-## Architecture
-
-The app follows an MVVM pattern:
-
-- **Models** — Data types for repos, recipes, overrides, recipe info, and navigation
-- **Services** — `AutoPkgCLI` wraps the `autopkg` binary with async/streaming support; `LaunchAgentManager` handles launchd scheduling
-- **ViewModels** — `@Observable` classes that bridge services to views
-- **Views** — SwiftUI views for each section of the app
-
-All AutoPkg operations are performed by shelling out to the `autopkg` CLI binary. Long-running commands (repo update, recipe runs) stream output in real-time using `AsyncStream` and `FileHandle.readabilityHandler`.
-
-## License
-
-MIT
