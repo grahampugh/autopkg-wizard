@@ -124,13 +124,31 @@ _pkg:
 		--identifier "$(BUNDLE_ID)" \
 		--version "$(VERSION)" \
 		"$(COMPONENT)"
+	@echo "==> Writing distribution XML…"
+	@( \
+		echo '<?xml version="1.0" encoding="utf-8"?>'; \
+		echo '<installer-gui-script minSpecVersion="2">'; \
+		echo '    <title>$(APP_NAME)</title>'; \
+		echo '    <pkg-ref id="$(BUNDLE_ID)"/>'; \
+		echo '    <options customize="never" require-scripts="false" rootVolumeOnly="true"/>'; \
+		echo '    <choices-outline>'; \
+		echo '        <line choice="default">'; \
+		echo '            <line choice="$(BUNDLE_ID)"/>'; \
+		echo '        </line>'; \
+		echo '    </choices-outline>'; \
+		echo '    <choice id="default"/>'; \
+		echo '    <choice id="$(BUNDLE_ID)" visible="false">'; \
+		echo '        <pkg-ref id="$(BUNDLE_ID)"/>'; \
+		echo '    </choice>'; \
+		echo '    <pkg-ref id="$(BUNDLE_ID)" version="$(VERSION)" onConclusion="none">$(notdir $(COMPONENT))</pkg-ref>'; \
+		echo '</installer-gui-script>'; \
+	) > "$(OUTPUT_DIR)/distribution.xml"
 	@echo "==> Creating distribution installer package $(PKG_NAME)…"
 	@productbuild \
-		--package "$(COMPONENT)" \
-		--identifier "$(BUNDLE_ID)" \
-		--version "$(VERSION)" \
+		--distribution "$(OUTPUT_DIR)/distribution.xml" \
+		--package-path "$(OUTPUT_DIR)" \
 		"$(PKG_PATH)"
-	@rm -f "$(COMPONENT)"
+	@rm -f "$(COMPONENT)" "$(OUTPUT_DIR)/distribution.xml"
 	@echo "==> Installer package ready: $(PKG_PATH)"
 
 # --- Internal: create the .dmg ---------------------------------------------
