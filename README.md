@@ -6,12 +6,12 @@ A modern macOS SwiftUI application for managing [AutoPkg](https://github.com/aut
 
 ## Requirements
 
-- macOS 15.0 (Sequoia) or later
+- macOS 26.0 or later
 - [AutoPkg](https://github.com/autopkg/autopkg/releases) installed at `/usr/local/bin/autopkg`
 
 ## Installation
 
-- Grab the `dmg` or `pkg` from the latest release on the [Releases](https://github.com/grahampugh/AutoPkgWizard/releases) page.
+- Grab the `dmg` or `pkg` from the latest release on the [Releases](https://github.com/grahampugh/autopkg-wizard/releases) page.
 - Note that the app is not currently signed or notarized. You may need to allow the package to be launched via System Settings > Security & Privacy.
 
 ## Features
@@ -80,25 +80,28 @@ The landing page shows a dashboard with counts of repos, recipes, and overrides,
 
 ## Building
 
-Build using `make`:
+Build using `make` from the repo root:
 
 ```bash
 make              # Debug build (.app only)
-make release      # Release build (.app + installer .pkg)
+make release      # Release build (.app + .pkg + .dmg + GitHub pre-release)
 make clean        # Remove all build artifacts
 ```
 
 The `make release` target:
-1. Compiles an optimised release build via Swift Package Manager
-2. Assembles the `.app` bundle
-3. Creates a macOS distribution installer package (`AutoPkgWizard-<version>.pkg`) that installs the app into `/Applications`
-4. Opens the output folder in Finder
+1. Compiles an optimised release build via Xcode
+2. Creates a macOS distribution installer package (`AutoPkgWizard-<version>.pkg`) that installs the app into `/Applications`
+3. Creates a distributable disk image (`AutoPkgWizard-<version>.dmg`)
+4. Creates a GitHub pre-release with both files attached
+5. Opens the output folder in Finder
 
-Alternatively, build with Swift Package Manager directly:
+Alternatively, build directly with `xcodebuild`:
 
 ```bash
-swift build                  # Debug build
-./build_app.sh release       # Release .app bundle only
+xcodebuild -project "AutoPkg Wizard/AutoPkg Wizard.xcodeproj" \
+           -scheme "AutoPkg Wizard" \
+           -configuration Release \
+           build
 ```
 
 ## Architecture
