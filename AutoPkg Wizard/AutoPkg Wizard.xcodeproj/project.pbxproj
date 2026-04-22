@@ -1,0 +1,621 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C4BDEF7C2F992B09009790A6 /* Highlightr in Frameworks */ = {isa = PBXBuildFile; productRef = C4BDEF7B2F992B09009790A6 /* Highlightr */; };
+		C4BDEF7F2F992B5E009790A6 /* Yams in Frameworks */ = {isa = PBXBuildFile; productRef = C4BDEF7E2F992B5E009790A6 /* Yams */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C4BDEF102F9907C3009790A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C4BDEEFA2F9907C2009790A6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C4BDEF012F9907C2009790A6;
+			remoteInfo = "AutoPkg Wizard";
+		};
+		C4BDEF1A2F9907C3009790A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C4BDEEFA2F9907C2009790A6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C4BDEF012F9907C2009790A6;
+			remoteInfo = "AutoPkg Wizard";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		C4BDEF022F9907C2009790A6 /* AutoPkg Wizard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AutoPkg Wizard.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4BDEF0F2F9907C3009790A6 /* AutoPkg WizardTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AutoPkg WizardTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4BDEF192F9907C3009790A6 /* AutoPkg WizardUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AutoPkg WizardUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		C4BDEF042F9907C2009790A6 /* AutoPkg Wizard */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "AutoPkg Wizard";
+			sourceTree = "<group>";
+		};
+		C4BDEF122F9907C3009790A6 /* AutoPkg WizardTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "AutoPkg WizardTests";
+			sourceTree = "<group>";
+		};
+		C4BDEF1C2F9907C3009790A6 /* AutoPkg WizardUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "AutoPkg WizardUITests";
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C4BDEEFF2F9907C2009790A6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C4BDEF7F2F992B5E009790A6 /* Yams in Frameworks */,
+				C4BDEF7C2F992B09009790A6 /* Highlightr in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C4BDEF0C2F9907C3009790A6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C4BDEF162F9907C3009790A6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C4BDEEF92F9907C2009790A6 = {
+			isa = PBXGroup;
+			children = (
+				C4BDEF042F9907C2009790A6 /* AutoPkg Wizard */,
+				C4BDEF122F9907C3009790A6 /* AutoPkg WizardTests */,
+				C4BDEF1C2F9907C3009790A6 /* AutoPkg WizardUITests */,
+				C4BDEF032F9907C2009790A6 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C4BDEF032F9907C2009790A6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C4BDEF022F9907C2009790A6 /* AutoPkg Wizard.app */,
+				C4BDEF0F2F9907C3009790A6 /* AutoPkg WizardTests.xctest */,
+				C4BDEF192F9907C3009790A6 /* AutoPkg WizardUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C4BDEF012F9907C2009790A6 /* AutoPkg Wizard */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C4BDEF232F9907C4009790A6 /* Build configuration list for PBXNativeTarget "AutoPkg Wizard" */;
+			buildPhases = (
+				C4BDEEFE2F9907C2009790A6 /* Sources */,
+				C4BDEEFF2F9907C2009790A6 /* Frameworks */,
+				C4BDEF002F9907C2009790A6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				C4BDEF042F9907C2009790A6 /* AutoPkg Wizard */,
+			);
+			name = "AutoPkg Wizard";
+			packageProductDependencies = (
+				C4BDEF7B2F992B09009790A6 /* Highlightr */,
+				C4BDEF7E2F992B5E009790A6 /* Yams */,
+			);
+			productName = "AutoPkg Wizard";
+			productReference = C4BDEF022F9907C2009790A6 /* AutoPkg Wizard.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C4BDEF0E2F9907C3009790A6 /* AutoPkg WizardTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C4BDEF262F9907C4009790A6 /* Build configuration list for PBXNativeTarget "AutoPkg WizardTests" */;
+			buildPhases = (
+				C4BDEF0B2F9907C3009790A6 /* Sources */,
+				C4BDEF0C2F9907C3009790A6 /* Frameworks */,
+				C4BDEF0D2F9907C3009790A6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C4BDEF112F9907C3009790A6 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C4BDEF122F9907C3009790A6 /* AutoPkg WizardTests */,
+			);
+			name = "AutoPkg WizardTests";
+			packageProductDependencies = (
+			);
+			productName = "AutoPkg WizardTests";
+			productReference = C4BDEF0F2F9907C3009790A6 /* AutoPkg WizardTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C4BDEF182F9907C3009790A6 /* AutoPkg WizardUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C4BDEF292F9907C4009790A6 /* Build configuration list for PBXNativeTarget "AutoPkg WizardUITests" */;
+			buildPhases = (
+				C4BDEF152F9907C3009790A6 /* Sources */,
+				C4BDEF162F9907C3009790A6 /* Frameworks */,
+				C4BDEF172F9907C3009790A6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C4BDEF1B2F9907C3009790A6 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C4BDEF1C2F9907C3009790A6 /* AutoPkg WizardUITests */,
+			);
+			name = "AutoPkg WizardUITests";
+			packageProductDependencies = (
+			);
+			productName = "AutoPkg WizardUITests";
+			productReference = C4BDEF192F9907C3009790A6 /* AutoPkg WizardUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C4BDEEFA2F9907C2009790A6 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2640;
+				LastUpgradeCheck = 2640;
+				TargetAttributes = {
+					C4BDEF012F9907C2009790A6 = {
+						CreatedOnToolsVersion = 26.4;
+					};
+					C4BDEF0E2F9907C3009790A6 = {
+						CreatedOnToolsVersion = 26.4;
+						TestTargetID = C4BDEF012F9907C2009790A6;
+					};
+					C4BDEF182F9907C3009790A6 = {
+						CreatedOnToolsVersion = 26.4;
+						TestTargetID = C4BDEF012F9907C2009790A6;
+					};
+				};
+			};
+			buildConfigurationList = C4BDEEFD2F9907C2009790A6 /* Build configuration list for PBXProject "AutoPkg Wizard" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C4BDEEF92F9907C2009790A6;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				C4BDEF7A2F992B09009790A6 /* XCRemoteSwiftPackageReference "Highlightr" */,
+				C4BDEF7D2F992B5E009790A6 /* XCRemoteSwiftPackageReference "Yams" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = C4BDEF032F9907C2009790A6 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C4BDEF012F9907C2009790A6 /* AutoPkg Wizard */,
+				C4BDEF0E2F9907C3009790A6 /* AutoPkg WizardTests */,
+				C4BDEF182F9907C3009790A6 /* AutoPkg WizardUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C4BDEF002F9907C2009790A6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C4BDEF0D2F9907C3009790A6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C4BDEF172F9907C3009790A6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C4BDEEFE2F9907C2009790A6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C4BDEF0B2F9907C3009790A6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C4BDEF152F9907C3009790A6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C4BDEF112F9907C3009790A6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C4BDEF012F9907C2009790A6 /* AutoPkg Wizard */;
+			targetProxy = C4BDEF102F9907C3009790A6 /* PBXContainerItemProxy */;
+		};
+		C4BDEF1B2F9907C3009790A6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C4BDEF012F9907C2009790A6 /* AutoPkg Wizard */;
+			targetProxy = C4BDEF1A2F9907C3009790A6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		C4BDEF212F9907C4009790A6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = ZHXM5TB3DG;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		C4BDEF222F9907C4009790A6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = ZHXM5TB3DG;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		C4BDEF242F9907C4009790A6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = ZHXM5TB3DG;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.grahamrpugh.AutoPkg-Wizard";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		C4BDEF252F9907C4009790A6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = ZHXM5TB3DG;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.grahamrpugh.AutoPkg-Wizard";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		C4BDEF272F9907C4009790A6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = ZHXM5TB3DG;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.grahamrpugh.AutoPkg-WizardTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AutoPkg Wizard.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AutoPkg Wizard";
+			};
+			name = Debug;
+		};
+		C4BDEF282F9907C4009790A6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = ZHXM5TB3DG;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.grahamrpugh.AutoPkg-WizardTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AutoPkg Wizard.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AutoPkg Wizard";
+			};
+			name = Release;
+		};
+		C4BDEF2A2F9907C4009790A6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = ZHXM5TB3DG;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.grahamrpugh.AutoPkg-WizardUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "AutoPkg Wizard";
+			};
+			name = Debug;
+		};
+		C4BDEF2B2F9907C4009790A6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = ZHXM5TB3DG;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.grahamrpugh.AutoPkg-WizardUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "AutoPkg Wizard";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C4BDEEFD2F9907C2009790A6 /* Build configuration list for PBXProject "AutoPkg Wizard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C4BDEF212F9907C4009790A6 /* Debug */,
+				C4BDEF222F9907C4009790A6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C4BDEF232F9907C4009790A6 /* Build configuration list for PBXNativeTarget "AutoPkg Wizard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C4BDEF242F9907C4009790A6 /* Debug */,
+				C4BDEF252F9907C4009790A6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C4BDEF262F9907C4009790A6 /* Build configuration list for PBXNativeTarget "AutoPkg WizardTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C4BDEF272F9907C4009790A6 /* Debug */,
+				C4BDEF282F9907C4009790A6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C4BDEF292F9907C4009790A6 /* Build configuration list for PBXNativeTarget "AutoPkg WizardUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C4BDEF2A2F9907C4009790A6 /* Debug */,
+				C4BDEF2B2F9907C4009790A6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C4BDEF7A2F992B09009790A6 /* XCRemoteSwiftPackageReference "Highlightr" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/raspu/Highlightr";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.3.0;
+			};
+		};
+		C4BDEF7D2F992B5E009790A6 /* XCRemoteSwiftPackageReference "Yams" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jpsim/Yams";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.2.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C4BDEF7B2F992B09009790A6 /* Highlightr */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C4BDEF7A2F992B09009790A6 /* XCRemoteSwiftPackageReference "Highlightr" */;
+			productName = Highlightr;
+		};
+		C4BDEF7E2F992B5E009790A6 /* Yams */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C4BDEF7D2F992B5E009790A6 /* XCRemoteSwiftPackageReference "Yams" */;
+			productName = Yams;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = C4BDEEFA2F9907C2009790A6 /* Project object */;
+}
