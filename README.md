@@ -12,7 +12,7 @@ A modern macOS SwiftUI application for managing [AutoPkg](https://github.com/aut
 ## Installation
 
 - Grab the `dmg` or `pkg` from the latest release on the [Releases](https://github.com/grahampugh/autopkg-wizard/releases) page.
-- Note that the app is not currently signed or notarized. You may need to allow the package to be launched via System Settings > Security & Privacy.
+- Note that the app is not currently signed or notarized. You may need to allow the app or package to be launched via System Settings > Security & Privacy.
 
 ## Features
 
