@@ -51,10 +51,8 @@ struct SyntaxHighlightEditor: NSViewRepresentable {
     func updateNSView(_ scrollView: NSScrollView, context: Context) {
         guard let textView = scrollView.documentView as? NSTextView else { return }
 
-        // Update the parent reference so the coordinator sees the latest language
         context.coordinator.parent = self
 
-        // Only update if the text or language has changed externally (not from user editing)
         if context.coordinator.isUpdating { return }
         let currentText = textView.string
         let languageChanged = context.coordinator.currentLanguage != language
@@ -71,8 +69,6 @@ struct SyntaxHighlightEditor: NSViewRepresentable {
         var highlightr: Highlightr?
         var isUpdating = false
         var currentLanguage: String = ""
-
-        // Debounce work item for re-highlighting
         private var highlightWork: DispatchWorkItem?
 
         init(_ parent: SyntaxHighlightEditor) {
@@ -81,7 +77,6 @@ struct SyntaxHighlightEditor: NSViewRepresentable {
 
         func setupHighlightr() {
             highlightr = Highlightr()
-            // Use a theme that works well on both light and dark backgrounds
             highlightr?.setTheme(to: "xcode")
         }
 
@@ -95,7 +90,6 @@ struct SyntaxHighlightEditor: NSViewRepresentable {
 
             if let highlightr = highlightr,
                let attributed = highlightr.highlight(text, as: parent.language) {
-                // Preserve the font size
                 let mutable = NSMutableAttributedString(attributedString: attributed)
                 let fullRange = NSRange(location: 0, length: mutable.length)
                 mutable.addAttribute(.font, value: NSFont.monospacedSystemFont(ofSize: 12, weight: .regular), range: fullRange)
@@ -104,7 +98,6 @@ struct SyntaxHighlightEditor: NSViewRepresentable {
                 textView.string = text
             }
 
-            // Restore selection
             textView.selectedRanges = selectedRanges
         }
 
@@ -116,7 +109,6 @@ struct SyntaxHighlightEditor: NSViewRepresentable {
                 let newText = textView.string
                 self.parent.text = newText
 
-                // Debounce re-highlighting
                 self.highlightWork?.cancel()
                 let work = DispatchWorkItem { [weak self] in
                     self?.applyHighlighting(newText)
@@ -140,12 +132,10 @@ enum OverrideFileType {
         } else if fileName.hasSuffix(".recipe.plist") || fileName.hasSuffix(".recipe") {
             self = .plist
         } else {
-            // Try to detect from content later; default to plist
             self = .unknown
         }
     }
 
-    /// The Highlightr language identifier
     var highlightrLanguage: String {
         switch self {
         case .plist: return "xml"
@@ -154,17 +144,14 @@ enum OverrideFileType {
         }
     }
 
-    /// Detect type from file content if the extension was ambiguous
     static func detect(fileName: String, content: String) -> OverrideFileType {
         let fromName = OverrideFileType(fileName: fileName)
         if fromName != .unknown { return fromName }
 
-        // Heuristic: if content starts with "<?xml" or "<" it's plist XML
         let trimmed = content.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.hasPrefix("<?xml") || trimmed.hasPrefix("<!DOCTYPE") || trimmed.hasPrefix("<") {
             return .plist
         }
-        // Otherwise assume YAML
         return .yaml
     }
 }

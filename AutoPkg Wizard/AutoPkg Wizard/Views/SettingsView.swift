@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct SettingsView: View {
     @State private var autoPkgPath: String = AutoPkgCLI.shared.autoPkgPath

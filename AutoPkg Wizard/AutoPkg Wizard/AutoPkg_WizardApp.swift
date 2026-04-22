@@ -1,7 +1,14 @@
+//
+//  AutoPkg_WizardApp.swift
+//  AutoPkg Wizard
+//
+//  Created by Graham Pugh on 22.04.26.
+//
+
 import SwiftUI
 
 @main
-struct AutoPkgWizardApp: App {
+struct AutoPkg_WizardApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @State private var autoPkgCLI = AutoPkgCLI.shared
     @State private var selectedSidebarItem: SidebarItem? = .overview

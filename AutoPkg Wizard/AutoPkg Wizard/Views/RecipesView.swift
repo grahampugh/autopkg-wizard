@@ -136,9 +136,7 @@ struct RecipesView: View {
                         }
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            if isEditing {
-                                toggleSelection(recipe)
-                            }
+                            if isEditing { toggleSelection(recipe) }
                         }
                         .contextMenu {
                             if !isEditing {
@@ -156,9 +154,7 @@ struct RecipesView: View {
                         }
                     }
                     .onMove { source, destination in
-                        if !isEditing {
-                            viewModel.moveRecipes(from: source, to: destination)
-                        }
+                        if !isEditing { viewModel.moveRecipes(from: source, to: destination) }
                     }
                 } header: {
                     HStack {
@@ -179,9 +175,7 @@ struct RecipesView: View {
                         Label("Remove Selected", systemImage: "trash")
                     }
                     .disabled(selectedRecipes.isEmpty)
-
                     Spacer()
-
                     Text("\(selectedRecipes.count) selected")
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -202,9 +196,7 @@ struct RecipesView: View {
     }
 
     private func deleteSelectedRecipes() {
-        for recipe in selectedRecipes {
-            viewModel.removeRecipe(recipe)
-        }
+        for recipe in selectedRecipes { viewModel.removeRecipe(recipe) }
         selectedRecipes.removeAll()
         isEditing = false
     }
@@ -220,8 +212,7 @@ struct RecipeRow: View {
             Image(systemName: recipeIcon)
                 .foregroundStyle(recipeColor)
                 .frame(width: 20)
-            Text(name)
-                .font(.body)
+            Text(name).font(.body)
         }
         .padding(.vertical, 1)
     }
@@ -256,18 +247,15 @@ struct AddRecipeSheet: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            Text("Add Recipe to List")
-                .font(.headline)
+            Text("Add Recipe to List").font(.headline)
 
             TabView(selection: $selectedTab) {
                 availableRecipesTab
                     .tabItem { Label("Available Recipes", systemImage: "list.bullet") }
                     .tag(0)
-
                 searchTab
                     .tabItem { Label("Search", systemImage: "magnifyingglass") }
                     .tag(1)
-
                 manualTab
                     .tabItem { Label("Manual Entry", systemImage: "pencil") }
                     .tag(2)
@@ -275,50 +263,34 @@ struct AddRecipeSheet: View {
             .frame(height: 350)
 
             HStack {
-                Button("Done") {
-                    viewModel.showAddSheet = false
-                }
-                .keyboardShortcut(.cancelAction)
+                Button("Done") { viewModel.showAddSheet = false }
+                    .keyboardShortcut(.cancelAction)
                 Spacer()
             }
         }
         .padding(20)
         .frame(width: 520)
-        .task {
-            await viewModel.loadAvailableRecipes()
-        }
+        .task { await viewModel.loadAvailableRecipes() }
     }
-
-    // MARK: Available Recipes Tab
 
     private var availableRecipesTab: some View {
         VStack(spacing: 8) {
-            TextField("Filter recipes…", text: $filterText)
-                .textFieldStyle(.roundedBorder)
-
+            TextField("Filter recipes…", text: $filterText).textFieldStyle(.roundedBorder)
             let filtered = filteredAvailableRecipes
             if viewModel.isLoading {
-                ProgressView("Loading available recipes…")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                ProgressView("Loading available recipes…").frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if filtered.isEmpty {
-                ContentUnavailableView.search(text: filterText)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                ContentUnavailableView.search(text: filterText).frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 List(filtered, selection: $selectedAvailableRecipe) { recipe in
                     HStack {
-                        Text(recipe.name)
-                            .font(.body)
+                        Text(recipe.name).font(.body)
                         Spacer()
                         if viewModel.isInRecipeList(recipe.name) {
-                            Text("In List")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                            Text("In List").font(.caption).foregroundStyle(.secondary)
                         } else {
-                            Button("Add") {
-                                viewModel.addRecipe(recipe.name)
-                            }
-                            .buttonStyle(.bordered)
-                            .controlSize(.small)
+                            Button("Add") { viewModel.addRecipe(recipe.name) }
+                                .buttonStyle(.bordered).controlSize(.small)
                         }
                     }
                 }
@@ -327,36 +299,25 @@ struct AddRecipeSheet: View {
     }
 
     private var filteredAvailableRecipes: [AutoPkgRecipe] {
-        if filterText.isEmpty { return viewModel.availableRecipes }
-        return viewModel.availableRecipes.filter {
-            $0.name.localizedCaseInsensitiveContains(filterText)
-        }
+        filterText.isEmpty ? viewModel.availableRecipes :
+            viewModel.availableRecipes.filter { $0.name.localizedCaseInsensitiveContains(filterText) }
     }
-
-    // MARK: Search Tab
 
     private var searchTab: some View {
         VStack(spacing: 8) {
             HStack {
                 TextField("Search for recipes…", text: $viewModel.searchQuery)
                     .textFieldStyle(.roundedBorder)
-                    .onSubmit {
-                        Task { await viewModel.performSearch() }
-                    }
-                Button("Search") {
-                    Task { await viewModel.performSearch() }
-                }
-                .disabled(viewModel.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .onSubmit { Task { await viewModel.performSearch() } }
+                Button("Search") { Task { await viewModel.performSearch() } }
+                    .disabled(viewModel.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
-
             if viewModel.isSearching {
-                ProgressView("Searching…")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                ProgressView("Searching…").frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if viewModel.searchResults.isEmpty {
                 ContentUnavailableView(
-                    "Search for Recipes",
-                    systemImage: "magnifyingglass",
-                    description: Text("Search for recipes available on GitHub. You may need to add the repo first.")
+                    "Search for Recipes", systemImage: "magnifyingglass",
+                    description: Text("Search for recipes available on GitHub.")
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
@@ -368,26 +329,16 @@ struct AddRecipeSheet: View {
                         }
                         Spacer()
                         if viewModel.isInRecipeList(result.name) {
-                            Text("In List")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                            Text("In List").font(.caption).foregroundStyle(.secondary)
                         } else if viewModel.addingRepoForResult == result.id {
                             HStack(spacing: 4) {
-                                ProgressView()
-                                    .controlSize(.small)
-                                Text(viewModel.repoAddStatus ?? "Adding…")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                ProgressView().controlSize(.small)
+                                Text(viewModel.repoAddStatus ?? "Adding…").font(.caption).foregroundStyle(.secondary)
                             }
                         } else {
-                            Button("Add") {
-                                Task {
-                                    await viewModel.addRecipeFromSearchResult(result)
-                                }
-                            }
-                            .buttonStyle(.bordered)
-                            .controlSize(.small)
-                            .disabled(viewModel.addingRepoForResult != nil)
+                            Button("Add") { Task { await viewModel.addRecipeFromSearchResult(result) } }
+                                .buttonStyle(.bordered).controlSize(.small)
+                                .disabled(viewModel.addingRepoForResult != nil)
                         }
                     }
                 }
@@ -395,25 +346,16 @@ struct AddRecipeSheet: View {
         }
     }
 
-    // MARK: Manual Tab
-
     private var manualTab: some View {
         VStack(spacing: 12) {
             Spacer()
             Text("Enter a recipe identifier manually (e.g. \"Firefox.jamf\")")
-                .font(.callout)
-                .foregroundStyle(.secondary)
-
+                .font(.callout).foregroundStyle(.secondary)
             TextField("Recipe identifier", text: $manualRecipeName)
                 .textFieldStyle(.roundedBorder)
-                .onSubmit {
-                    addManualRecipe()
-                }
-
-            Button("Add to List") {
-                addManualRecipe()
-            }
-            .disabled(manualRecipeName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .onSubmit { addManualRecipe() }
+            Button("Add to List") { addManualRecipe() }
+                .disabled(manualRecipeName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             Spacer()
         }
         .padding(.horizontal)
@@ -435,18 +377,13 @@ struct RunLogSheet: View {
     var body: some View {
         VStack(spacing: 12) {
             HStack {
-                Text("Recipe Run Output")
-                    .font(.headline)
+                Text("Recipe Run Output").font(.headline)
                 Spacer()
                 if viewModel.isRunning {
-                    ProgressView()
-                        .controlSize(.small)
-                    Text("Running…")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    ProgressView().controlSize(.small)
+                    Text("Running…").font(.caption).foregroundStyle(.secondary)
                 }
             }
-
             ScrollViewReader { proxy in
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 1) {
@@ -469,21 +406,15 @@ struct RunLogSheet: View {
                     }
                 }
             }
-
             HStack {
                 Button("Copy Log") {
-                    let text = viewModel.runLog.joined(separator: "\n")
                     NSPasteboard.general.clearContents()
-                    NSPasteboard.general.setString(text, forType: .string)
+                    NSPasteboard.general.setString(viewModel.runLog.joined(separator: "\n"), forType: .string)
                 }
-
                 Spacer()
-
-                Button("Close") {
-                    viewModel.showRunLog = false
-                }
-                .keyboardShortcut(.cancelAction)
-                .disabled(viewModel.isRunning)
+                Button("Close") { viewModel.showRunLog = false }
+                    .keyboardShortcut(.cancelAction)
+                    .disabled(viewModel.isRunning)
             }
         }
         .padding(20)
@@ -506,22 +437,15 @@ struct RecipeInfoSheet: View {
     var body: some View {
         VStack(spacing: 12) {
             HStack {
-                Text("Recipe Info: \(viewModel.recipeInfoName)")
-                    .font(.headline)
+                Text("Recipe Info: \(viewModel.recipeInfoName)").font(.headline)
                 Spacer()
-                if viewModel.isLoadingInfo {
-                    ProgressView()
-                        .controlSize(.small)
-                }
+                if viewModel.isLoadingInfo { ProgressView().controlSize(.small) }
             }
-
             if viewModel.isLoadingInfo && viewModel.recipeInfoParsed == nil {
-                ProgressView("Loading info…")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                ProgressView("Loading info…").frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if let info = viewModel.recipeInfoParsed {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        // Header fields
                         infoSection {
                             infoRow("Description", value: info.description)
                             Divider()
@@ -529,8 +453,6 @@ struct RecipeInfoSheet: View {
                             Divider()
                             infoRow("Recipe file path", value: info.recipeFilePath)
                         }
-
-                        // Build details
                         infoSection {
                             infoRow("Munki import recipe", value: info.munkiImportRecipe)
                             Divider()
@@ -538,30 +460,19 @@ struct RecipeInfoSheet: View {
                             Divider()
                             infoRow("Builds package", value: info.buildsPackage)
                         }
-
-                        // Parent recipes
                         if !info.parentRecipes.isEmpty {
                             infoSection {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text("Parent recipe(s)")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                    Text("Parent recipe(s)").font(.caption).foregroundStyle(.secondary)
                                     ForEach(info.parentRecipes, id: \.self) { parent in
-                                        Text(parent)
-                                            .font(.system(.body, design: .monospaced))
-                                            .textSelection(.enabled)
+                                        Text(parent).font(.system(.body, design: .monospaced)).textSelection(.enabled)
                                     }
                                 }
                             }
                         }
-
-                        // Input values
                         if !info.inputValues.isEmpty {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Input Values")
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-
+                                Text("Input Values").font(.subheadline).fontWeight(.semibold)
                                 infoSection {
                                     ForEach(Array(info.inputValues.enumerated()), id: \.offset) { index, entry in
                                         if index > 0 { Divider() }
@@ -574,7 +485,6 @@ struct RecipeInfoSheet: View {
                     .padding(8)
                 }
             } else {
-                // Fallback: raw text if parsing failed
                 ScrollView {
                     Text(viewModel.recipeInfoRaw)
                         .font(.system(.body, design: .monospaced))
@@ -585,43 +495,32 @@ struct RecipeInfoSheet: View {
                 .background(Color(nsColor: .textBackgroundColor))
                 .clipShape(RoundedRectangle(cornerRadius: 6))
             }
-
             HStack {
                 Button("Copy") {
                     NSPasteboard.general.clearContents()
                     NSPasteboard.general.setString(viewModel.recipeInfoRaw, forType: .string)
                 }
                 .disabled(viewModel.recipeInfoRaw.isEmpty)
-
                 Spacer()
-
-                Button("Close") {
-                    viewModel.showRecipeInfo = false
-                }
-                .keyboardShortcut(.cancelAction)
+                Button("Close") { viewModel.showRecipeInfo = false }
+                    .keyboardShortcut(.cancelAction)
             }
         }
         .padding(20)
         .frame(width: 640, height: 480)
     }
 
-    // MARK: - Helpers
-
     private func infoSection<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            content()
-        }
-        .padding(10)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(nsColor: .textBackgroundColor))
-        .clipShape(RoundedRectangle(cornerRadius: 6))
+        VStack(alignment: .leading, spacing: 6) { content() }
+            .padding(10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color(nsColor: .textBackgroundColor))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
     }
 
     private func infoRow(_ label: String, value: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(label)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            Text(label).font(.caption).foregroundStyle(.secondary)
             Text(value.isEmpty ? "—" : value)
                 .font(.system(.body, design: .monospaced))
                 .textSelection(.enabled)

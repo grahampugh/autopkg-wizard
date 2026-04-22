@@ -9,7 +9,6 @@ struct OverridesView: View {
         HSplitView {
             overridesList
                 .frame(minWidth: 250, maxHeight: .infinity, alignment: .top)
-
             detailPane
                 .frame(minWidth: 300, maxHeight: .infinity)
         }
@@ -65,82 +64,76 @@ struct OverridesView: View {
                 )
             } else {
                 List(viewModel.overrides, selection: Binding(
-                        get: { viewModel.selectedOverride },
-                        set: { override in
-                            if !isEditing, let override {
-                                viewModel.selectOverride(override)
+                    get: { viewModel.selectedOverride },
+                    set: { override in
+                        if !isEditing, let override {
+                            viewModel.selectOverride(override)
+                        }
+                    }
+                )) { override in
+                    HStack {
+                        if isEditing {
+                            Button {
+                                toggleSelection(override)
+                            } label: {
+                                Image(systemName: selectedOverrides.contains(override.id) ? "checkmark.circle.fill" : "circle")
+                                    .foregroundStyle(selectedOverrides.contains(override.id) ? .blue : .secondary)
+                                    .imageScale(.large)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        OverrideRow(override: override, trustState: viewModel.trustStatus[override.id] ?? .unknown)
+                        Spacer()
+                        if !isEditing {
+                            Button {
+                                NSWorkspace.shared.selectFile(override.filePath, inFileViewerRootedAtPath: "")
+                            } label: {
+                                Image(systemName: "folder").foregroundStyle(.secondary)
+                            }
+                            .buttonStyle(.plain)
+                            .help("Reveal in Finder")
+                        }
+                    }
+                    .contentShape(Rectangle())
+                    .gesture(isEditing ? TapGesture().onEnded { toggleSelection(override) } : nil)
+                    .contextMenu {
+                        if !isEditing {
+                            Button("Verify Trust Info") {
+                                Task { await viewModel.verifyTrust(for: override) }
+                            }
+                            Button("Update Trust Info") {
+                                Task { await viewModel.updateTrust(for: override) }
+                            }
+                            Divider()
+                            Button("Show in Finder") {
+                                NSWorkspace.shared.selectFile(override.filePath, inFileViewerRootedAtPath: "")
+                            }
+                            Divider()
+                            Button("Delete Override", role: .destructive) {
+                                viewModel.deleteOverride(override)
                             }
                         }
-                    )) { override in
-                        HStack {
-                            if isEditing {
-                                Button {
-                                    toggleSelection(override)
-                                } label: {
-                                    Image(systemName: selectedOverrides.contains(override.id) ? "checkmark.circle.fill" : "circle")
-                                        .foregroundStyle(selectedOverrides.contains(override.id) ? .blue : .secondary)
-                                        .imageScale(.large)
-                                }
-                                .buttonStyle(.plain)
-                            }
-                            OverrideRow(override: override, trustState: viewModel.trustStatus[override.id] ?? .unknown)
-                            Spacer()
-                            if !isEditing {
-                                Button {
-                                    NSWorkspace.shared.selectFile(override.filePath, inFileViewerRootedAtPath: "")
-                                } label: {
-                                    Image(systemName: "folder")
-                                        .foregroundStyle(.secondary)
-                                }
-                                .buttonStyle(.plain)
-                                .help("Reveal in Finder")
-                            }
-                        }
-                        .contentShape(Rectangle())
-                        .gesture(isEditing ? TapGesture().onEnded {
-                            toggleSelection(override)
-                        } : nil)
-                        .contextMenu {
-                            if !isEditing {
-                                Button("Verify Trust Info") {
-                                    Task { await viewModel.verifyTrust(for: override) }
-                                }
-                                Button("Update Trust Info") {
-                                    Task { await viewModel.updateTrust(for: override) }
-                                }
-                                Divider()
-                                Button("Show in Finder") {
-                                    NSWorkspace.shared.selectFile(override.filePath, inFileViewerRootedAtPath: "")
-                                }
-                                Divider()
-                                Button("Delete Override", role: .destructive) {
-                                    viewModel.deleteOverride(override)
-                                }
-                            }
-                        }
-                        .tag(override)
+                    }
+                    .tag(override)
                 }
                 .listStyle(.plain)
                 .frame(maxHeight: .infinity, alignment: .top)
 
                 if isEditing {
-                        HStack {
-                            Button(role: .destructive) {
-                                deleteSelectedOverrides()
-                            } label: {
-                                Label("Delete Selected", systemImage: "trash")
-                            }
-                            .disabled(selectedOverrides.isEmpty)
-
-                            Spacer()
-
-                            Text("\(selectedOverrides.count) selected")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                    HStack {
+                        Button(role: .destructive) {
+                            deleteSelectedOverrides()
+                        } label: {
+                            Label("Delete Selected", systemImage: "trash")
                         }
-                        .padding(.horizontal)
-                        .padding(.vertical, 8)
-                        .background(.bar)
+                        .disabled(selectedOverrides.isEmpty)
+                        Spacer()
+                        Text("\(selectedOverrides.count) selected")
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                    .background(.bar)
                 }
             }
         }
@@ -152,54 +145,41 @@ struct OverridesView: View {
         Group {
             if let override = viewModel.selectedOverride {
                 VStack(alignment: .leading, spacing: 8) {
-                    // File name
                     Text(override.fileName)
                         .font(.headline)
                         .padding(.horizontal)
                         .padding(.top, 8)
 
-                    // Trust info and action buttons
                     HStack {
                         let trustState = viewModel.trustStatus[override.id] ?? .unknown
                         trustBadge(trustState)
-
                         Spacer()
-
                         Button("Verify") {
                             Task { await viewModel.verifyTrust(for: override) }
                         }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
+                        .buttonStyle(.bordered).controlSize(.small)
 
                         Button("Update Trust") {
                             Task { await viewModel.updateTrust(for: override) }
                         }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
+                        .buttonStyle(.bordered).controlSize(.small)
 
                         Button("Save") {
                             viewModel.saveOverrideContents()
                         }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.small)
+                        .buttonStyle(.borderedProminent).controlSize(.small)
                         .keyboardShortcut("s", modifiers: .command)
                     }
                     .padding(.horizontal)
 
                     if let status = viewModel.statusMessage {
-                        Text(status)
-                            .font(.caption)
-                            .foregroundStyle(.green)
-                            .padding(.horizontal)
+                        Text(status).font(.caption).foregroundStyle(.green).padding(.horizontal)
                     }
 
                     if let validationError = viewModel.validationError {
                         HStack(spacing: 4) {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                                .foregroundStyle(.red)
-                            Text(validationError)
-                                .font(.caption)
-                                .foregroundStyle(.red)
+                            Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.red)
+                            Text(validationError).font(.caption).foregroundStyle(.red)
                         }
                         .padding(.horizontal)
                     }
@@ -231,26 +211,16 @@ struct OverridesView: View {
     @ViewBuilder
     private func trustBadge(_ state: OverridesViewModel.TrustState) -> some View {
         HStack(spacing: 4) {
-            Image(systemName: state.icon)
-                .foregroundStyle(state.color)
+            Image(systemName: state.icon).foregroundStyle(state.color)
             switch state {
             case .unknown:
-                Text("Not Checked")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                Text("Not Checked").font(.caption).foregroundStyle(.secondary)
             case .verifying:
-                Text("Verifying…")
-                    .font(.caption)
-                    .foregroundStyle(.blue)
+                Text("Verifying…").font(.caption).foregroundStyle(.blue)
             case .verified:
-                Text("Verified")
-                    .font(.caption)
-                    .foregroundStyle(.green)
+                Text("Verified").font(.caption).foregroundStyle(.green)
             case .failed(let message):
-                Text("Failed")
-                    .font(.caption)
-                    .foregroundStyle(.orange)
-                    .help(message)
+                Text("Failed").font(.caption).foregroundStyle(.orange).help(message)
             }
         }
     }
@@ -265,9 +235,7 @@ struct OverridesView: View {
 
     private func deleteSelectedOverrides() {
         let toDelete = viewModel.overrides.filter { selectedOverrides.contains($0.id) }
-        for override in toDelete {
-            viewModel.deleteOverride(override)
-        }
+        for override in toDelete { viewModel.deleteOverride(override) }
         selectedOverrides.removeAll()
         isEditing = false
     }
@@ -281,16 +249,10 @@ struct OverrideRow: View {
 
     var body: some View {
         HStack {
-            Image(systemName: "doc.text")
-                .foregroundStyle(.blue)
+            Image(systemName: "doc.text").foregroundStyle(.blue)
             VStack(alignment: .leading, spacing: 1) {
-                Text(override.recipeName)
-                    .font(.body)
-                    .lineLimit(1)
-                Text(override.fileName)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                Text(override.recipeName).font(.body).lineLimit(1)
+                Text(override.fileName).font(.caption2).foregroundStyle(.secondary).lineLimit(1)
             }
             Spacer()
             if case .unknown = trustState {

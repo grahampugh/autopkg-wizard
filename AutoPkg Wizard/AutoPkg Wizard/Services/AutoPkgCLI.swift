@@ -99,7 +99,7 @@ final class AutoPkgCLI {
     /// Check if autopkg is installed and get version
     func checkInstallation() async {
         let path = autoPkgPath
-        guard FileManager.default.isExecutableFile(atPath: path) else {
+        guard FileManager.default.fileExists(atPath: path) else {
             isInstalled = false
             installedVersion = ""
             return
@@ -224,7 +224,7 @@ final class AutoPkgCLI {
     @discardableResult
     private func runSimple(arguments: [String]) async throws -> String {
         let path = autoPkgPath
-        guard FileManager.default.isExecutableFile(atPath: path) else {
+        guard FileManager.default.fileExists(atPath: path) else {
             throw AutoPkgError.notInstalled(path: path)
         }
 
@@ -316,9 +316,10 @@ final class AutoPkgCLI {
         }
 
         let task = Task<Int32, Never>.detached { [weak self, streamContinuation] in
+            let weakSelf = self
             guard let continuation = streamContinuation else { return -1 }
 
-            guard FileManager.default.isExecutableFile(atPath: path) else {
+            guard FileManager.default.fileExists(atPath: path) else {
                 continuation.yield("ERROR: AutoPkg not found at \(path)")
                 continuation.finish()
                 return -1
@@ -335,8 +336,8 @@ final class AutoPkgCLI {
 
             // Track the process for cancellation
             await MainActor.run {
-                self?.currentProcess = process
-                self?.showTimeoutAlert = false
+                weakSelf?.currentProcess = process
+                weakSelf?.showTimeoutAlert = false
             }
 
             // Track last activity time for inactivity timeout
@@ -345,16 +346,16 @@ final class AutoPkgCLI {
             let commandDesc = "autopkg \(arguments.joined(separator: " "))"
 
             // Start inactivity watchdog
-            let watchdog = Task<Void, Never>.detached { [weak self] in
+            let watchdog = Task<Void, Never>.detached { [weakSelf] in
                 while !Task.isCancelled {
                     try? await Task.sleep(for: .seconds(10))
                     guard !Task.isCancelled else { return }
                     let elapsed = Date().timeIntervalSince(lastActivityDate)
                     if elapsed >= timeout && process.isRunning {
                         await MainActor.run {
-                            guard self?.showTimeoutAlert != true else { return }
-                            self?.stalledCommandDescription = commandDesc
-                            self?.showTimeoutAlert = true
+                            guard weakSelf?.showTimeoutAlert != true else { return }
+                            weakSelf?.stalledCommandDescription = commandDesc
+                            weakSelf?.showTimeoutAlert = true
                         }
                     }
                 }
@@ -399,10 +400,10 @@ final class AutoPkgCLI {
             continuation.finish()
 
             await MainActor.run {
-                if self?.currentProcess === process {
-                    self?.currentProcess = nil
+                if weakSelf?.currentProcess === process {
+                    weakSelf?.currentProcess = nil
                 }
-                self?.showTimeoutAlert = false
+                weakSelf?.showTimeoutAlert = false
             }
 
             return process.terminationStatus

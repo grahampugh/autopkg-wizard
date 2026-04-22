@@ -2,8 +2,8 @@ import Foundation
 
 /// Manages the launchd LaunchAgent for scheduling autopkg runs
 struct LaunchAgentManager: Sendable {
-    static let agentLabel = "com.github.autopkg.wizard.runner"
-    static var agentPlistPath: String {
+    nonisolated static let agentLabel = "com.github.autopkg.wizard.runner"
+    nonisolated static var agentPlistPath: String {
         NSString(string: "~/Library/LaunchAgents/\(agentLabel).plist").expandingTildeInPath
     }
 
@@ -102,7 +102,7 @@ struct LaunchAgentManager: Sendable {
     }
 
     /// Check if the agent is currently loaded
-    static func isAgentLoaded() -> Bool {
+    nonisolated static func isAgentLoaded() -> Bool {
         let process = Process()
         let pipe = Pipe()
         process.executableURL = URL(fileURLWithPath: "/bin/launchctl")
@@ -120,7 +120,7 @@ struct LaunchAgentManager: Sendable {
     }
 
     /// Load the agent using launchctl
-    static func loadAgent() {
+    nonisolated static func loadAgent() {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/bin/launchctl")
         let uid = getuid()
@@ -132,7 +132,7 @@ struct LaunchAgentManager: Sendable {
     }
 
     /// Unload the agent using launchctl
-    static func unloadAgent() {
+    nonisolated static func unloadAgent() {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/bin/launchctl")
         let uid = getuid()

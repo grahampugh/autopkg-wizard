@@ -31,47 +31,29 @@ struct ScheduleView: View {
                     daySelector
 
                     HStack(spacing: 12) {
-                        Button("Every Day") {
-                            viewModel.selectAllDays()
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
-
-                        Button("Weekdays Only") {
-                            viewModel.selectWeekdaysOnly()
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
+                        Button("Every Day") { viewModel.selectAllDays() }
+                            .buttonStyle(.bordered).controlSize(.small)
+                        Button("Weekdays Only") { viewModel.selectWeekdaysOnly() }
+                            .buttonStyle(.bordered).controlSize(.small)
                     }
                 }
 
                 Section("Configuration") {
                     LabeledContent("Recipe List") {
                         Text(AutoPkgCLI.shared.recipeListPath)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .textSelection(.enabled)
+                            .font(.caption).foregroundStyle(.secondary).textSelection(.enabled)
                     }
-
                     LabeledContent("AutoPkg Path") {
                         Text(AutoPkgCLI.shared.autoPkgPath)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .textSelection(.enabled)
+                            .font(.caption).foregroundStyle(.secondary).textSelection(.enabled)
                     }
-
                     LabeledContent("LaunchAgent") {
                         Text(LaunchAgentManager.agentPlistPath)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .textSelection(.enabled)
+                            .font(.caption).foregroundStyle(.secondary).textSelection(.enabled)
                     }
-
                     LabeledContent("Log File") {
                         Text("~/Library/Logs/\(LaunchAgentManager.agentLabel).log")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .textSelection(.enabled)
+                            .font(.caption).foregroundStyle(.secondary).textSelection(.enabled)
                     }
                 }
 
@@ -81,26 +63,20 @@ struct ScheduleView: View {
                             Image(systemName: viewModel.agentLoaded ? "checkmark.circle.fill" : "xmark.circle")
                                 .foregroundStyle(viewModel.agentLoaded ? .green : .red)
                         }
-
                         LabeledContent("Next Scheduled Run") {
-                            Text(nextRun, style: .date)
-                            + Text(" at ")
-                            + Text(nextRun, style: .time)
+                            Text("\(nextRun, style: .date) at \(nextRun, style: .time)")
                         }
                         .font(.callout)
 
                         if let lastRun = viewModel.lastRunDate {
                             LabeledContent("Last Run") {
                                 HStack(spacing: 8) {
-                                    Text(lastRun, style: .relative)
-                                    + Text(" ago")
-
+                                    Text("\(lastRun, style: .relative) ago")
                                     if viewModel.lastRunSummary != nil {
                                         Button {
                                             viewModel.showSummary = true
                                         } label: {
-                                            Image(systemName: "info.circle")
-                                                .foregroundStyle(.blue)
+                                            Image(systemName: "info.circle").foregroundStyle(.blue)
                                         }
                                         .buttonStyle(.plain)
                                         .help("View run summary")
@@ -116,31 +92,20 @@ struct ScheduleView: View {
             Section {
                 HStack {
                     if let status = viewModel.statusMessage {
-                        Text(status)
-                            .font(.caption)
-                            .foregroundStyle(.green)
+                        Text(status).font(.caption).foregroundStyle(.green)
                     }
-
                     Spacer()
-
-                    Button("Refresh Status") {
-                        viewModel.refreshStatus()
-                    }
-                    .buttonStyle(.bordered)
-
-                    Button("Save") {
-                        viewModel.saveSchedule()
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(viewModel.isSaving)
+                    Button("Refresh Status") { viewModel.refreshStatus() }
+                        .buttonStyle(.bordered)
+                    Button("Save") { viewModel.saveSchedule() }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(viewModel.isSaving)
                 }
             }
         }
         .formStyle(.grouped)
         .navigationTitle("Schedule")
-        .onAppear {
-            viewModel.refreshStatus()
-        }
+        .onAppear { viewModel.refreshStatus() }
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -152,8 +117,6 @@ struct ScheduleView: View {
             }
         }
     }
-
-    // MARK: - Day Selector
 
     private var daySelector: some View {
         HStack(spacing: 6) {
@@ -201,17 +164,11 @@ struct RunSummarySheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Header
             HStack {
-                Image(systemName: "doc.text.magnifyingglass")
-                    .font(.title2)
-                    .foregroundStyle(.blue)
-                Text("Run Summary")
-                    .font(.headline)
+                Image(systemName: "doc.text.magnifyingglass").font(.title2).foregroundStyle(.blue)
+                Text("Run Summary").font(.headline)
                 Spacer()
-                Text(summary.date, style: .date)
-                + Text(" at ")
-                + Text(summary.date, style: .time)
+                Text("\(summary.date, style: .date) at \(summary.date, style: .time)")
             }
             .foregroundStyle(.secondary)
             .padding()
@@ -220,99 +177,62 @@ struct RunSummarySheet: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    // Failed Recipes
                     if !summary.failedRecipes.isEmpty {
-                        summarySection(
-                            title: "Failed Recipes",
-                            icon: "xmark.circle.fill",
-                            iconColor: .red,
-                            count: summary.failedRecipes.count
-                        ) {
+                        summarySection(title: "Failed Recipes", icon: "xmark.circle.fill", iconColor: .red, count: summary.failedRecipes.count) {
                             ForEach(Array(summary.failedRecipes.enumerated()), id: \.offset) { _, recipe in
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text(recipe.name)
-                                        .font(.body.weight(.medium))
+                                    Text(recipe.name).font(.body.weight(.medium))
                                     if !recipe.reason.isEmpty {
-                                        Text(recipe.reason)
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
+                                        Text(recipe.reason).font(.caption).foregroundStyle(.secondary)
                                     }
                                 }
                             }
                         }
                     }
 
-                    // Downloaded Items
                     if !summary.downloadedItems.isEmpty {
-                        summarySection(
-                            title: "New Downloads",
-                            icon: "arrow.down.circle.fill",
-                            iconColor: .blue,
-                            count: summary.downloadedItems.count
-                        ) {
+                        summarySection(title: "New Downloads", icon: "arrow.down.circle.fill", iconColor: .blue, count: summary.downloadedItems.count) {
                             ForEach(Array(summary.downloadedItems.enumerated()), id: \.offset) { _, item in
-                                Text(item.path)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                    .textSelection(.enabled)
+                                Text(item.path).font(.caption).foregroundStyle(.secondary).textSelection(.enabled)
                             }
                         }
                     }
 
-                    // Built Packages
                     if !summary.builtPackages.isEmpty {
-                        summarySection(
-                            title: "Packages Built",
-                            icon: "shippingbox.fill",
-                            iconColor: .green,
-                            count: summary.builtPackages.count
-                        ) {
+                        summarySection(title: "Packages Built", icon: "shippingbox.fill", iconColor: .green, count: summary.builtPackages.count) {
                             ForEach(Array(summary.builtPackages.enumerated()), id: \.offset) { _, pkg in
                                 VStack(alignment: .leading, spacing: 2) {
                                     HStack {
-                                        Text(pkg.identifier)
-                                            .font(.body.weight(.medium))
+                                        Text(pkg.identifier).font(.body.weight(.medium))
                                         if !pkg.version.isEmpty {
                                             Text("v\(pkg.version)")
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
-                                                .padding(.horizontal, 6)
-                                                .padding(.vertical, 2)
+                                                .font(.caption).foregroundStyle(.secondary)
+                                                .padding(.horizontal, 6).padding(.vertical, 2)
                                                 .background(Color.green.opacity(0.1))
                                                 .clipShape(Capsule())
                                         }
                                     }
                                     if !pkg.path.isEmpty {
-                                        Text(pkg.path)
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                            .textSelection(.enabled)
+                                        Text(pkg.path).font(.caption).foregroundStyle(.secondary).textSelection(.enabled)
                                     }
                                 }
                             }
                         }
                     }
 
-                    // Nothing to report
                     if summary.isEmpty {
                         HStack {
                             Spacer()
                             VStack(spacing: 8) {
-                                Image(systemName: "checkmark.circle")
-                                    .font(.largeTitle)
-                                    .foregroundStyle(.green)
-                                Text("Nothing to report")
-                                    .font(.headline)
-                                Text("No failures, downloads, or new packages.")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                Image(systemName: "checkmark.circle").font(.largeTitle).foregroundStyle(.green)
+                                Text("Nothing to report").font(.headline)
+                                Text("No failures, downloads, or new packages.").font(.caption).foregroundStyle(.secondary)
                             }
                             Spacer()
                         }
                         .padding(.vertical, 20)
                     }
 
-                    // Raw output toggle
                     DisclosureGroup("Raw Output") {
                         Text(summary.rawText)
                             .font(.system(.caption, design: .monospaced))
@@ -322,29 +242,23 @@ struct RunSummarySheet: View {
                             .background(Color(nsColor: .textBackgroundColor))
                             .clipShape(RoundedRectangle(cornerRadius: 6))
                     }
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.caption).foregroundStyle(.secondary)
                 }
                 .padding()
             }
 
             Divider()
 
-            // Footer
             HStack {
                 Button("Copy") {
                     NSPasteboard.general.clearContents()
                     NSPasteboard.general.setString(summary.rawText, forType: .string)
                 }
                 .buttonStyle(.bordered)
-
                 Spacer()
-
-                Button("Done") {
-                    dismiss()
-                }
-                .buttonStyle(.borderedProminent)
-                .keyboardShortcut(.cancelAction)
+                Button("Done") { dismiss() }
+                    .buttonStyle(.borderedProminent)
+                    .keyboardShortcut(.cancelAction)
             }
             .padding()
         }
@@ -352,30 +266,20 @@ struct RunSummarySheet: View {
     }
 
     private func summarySection<Content: View>(
-        title: String,
-        icon: String,
-        iconColor: Color,
-        count: Int,
+        title: String, icon: String, iconColor: Color, count: Int,
         @ViewBuilder content: () -> Content
     ) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Image(systemName: icon)
-                    .foregroundStyle(iconColor)
-                Text(title)
-                    .font(.subheadline.weight(.semibold))
-                Text("(\(count))")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                Image(systemName: icon).foregroundStyle(iconColor)
+                Text(title).font(.subheadline.weight(.semibold))
+                Text("(\(count))").font(.caption).foregroundStyle(.secondary)
             }
-
-            VStack(alignment: .leading, spacing: 6) {
-                content()
-            }
-            .padding(10)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(nsColor: .controlBackgroundColor))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            VStack(alignment: .leading, spacing: 6) { content() }
+                .padding(10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color(nsColor: .controlBackgroundColor))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
         }
     }
 }

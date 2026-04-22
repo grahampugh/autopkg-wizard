@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct ArgumentsView: View {
     @State private var viewModel = ArgumentsViewModel()
@@ -27,20 +28,15 @@ struct ArgumentsView: View {
             // MARK: - Pre-Processors
             Section {
                 preProcessorsList
-
                 AddItemField(
                     label: "Processor name (e.g. com.example.MyPreProcessor)",
                     buttonLabel: "Add Pre-Processor"
-                ) { name in
-                    viewModel.addPreProcessor(name)
-                }
+                ) { name in viewModel.addPreProcessor(name) }
             } header: {
                 HStack {
                     Text("Pre-Processors")
                     Spacer()
-                    Text("\(viewModel.config.preProcessors.count)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    Text("\(viewModel.config.preProcessors.count)").font(.caption).foregroundStyle(.secondary)
                 }
             } footer: {
                 Text("Pre-processors run before each recipe. Each entry becomes a --pre argument.")
@@ -49,20 +45,15 @@ struct ArgumentsView: View {
             // MARK: - Post-Processors
             Section {
                 postProcessorsList
-
                 AddItemField(
                     label: "Processor name (e.g. com.example.MyPostProcessor)",
                     buttonLabel: "Add Post-Processor"
-                ) { name in
-                    viewModel.addPostProcessor(name)
-                }
+                ) { name in viewModel.addPostProcessor(name) }
             } header: {
                 HStack {
                     Text("Post-Processors")
                     Spacer()
-                    Text("\(viewModel.config.postProcessors.count)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    Text("\(viewModel.config.postProcessors.count)").font(.caption).foregroundStyle(.secondary)
                 }
             } footer: {
                 Text("Post-processors run after each recipe. Each entry becomes a --post argument.")
@@ -71,17 +62,12 @@ struct ArgumentsView: View {
             // MARK: - Key-Value Pairs
             Section {
                 keyValuePairsList
-
-                AddKeyValueField { key, value in
-                    viewModel.addKeyValuePair(key: key, value: value)
-                }
+                AddKeyValueField { key, value in viewModel.addKeyValuePair(key: key, value: value) }
             } header: {
                 HStack {
                     Text("Key-Value Pairs")
                     Spacer()
-                    Text("\(viewModel.config.keyValuePairs.count)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    Text("\(viewModel.config.keyValuePairs.count)").font(.caption).foregroundStyle(.secondary)
                 }
             } footer: {
                 Text("Key-value pairs override recipe input variables. Each entry becomes a --key=KEY=VALUE argument.")
@@ -90,7 +76,6 @@ struct ArgumentsView: View {
             // MARK: - Source Packages
             Section {
                 sourcePackagesList
-
                 Button {
                     chooseSourcePackage()
                 } label: {
@@ -101,9 +86,7 @@ struct ArgumentsView: View {
                 HStack {
                     Text("Source Packages")
                     Spacer()
-                    Text("\(viewModel.config.sourcePackages.count)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    Text("\(viewModel.config.sourcePackages.count)").font(.caption).foregroundStyle(.secondary)
                 }
             } footer: {
                 Text("A source package to pass to autopkg run. Only one can be active at a time (--pkg argument).")
@@ -120,12 +103,9 @@ struct ArgumentsView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 6))
             }
 
-            // MARK: - Status
             if let status = viewModel.statusMessage {
                 Section {
-                    Text(status)
-                        .font(.caption)
-                        .foregroundStyle(.green)
+                    Text(status).font(.caption).foregroundStyle(.green)
                 }
             }
         }
@@ -138,20 +118,14 @@ struct ArgumentsView: View {
         }
     }
 
-    // MARK: - Pre-Processors List
-
     @ViewBuilder
     private var preProcessorsList: some View {
         if viewModel.config.preProcessors.isEmpty {
-            Text("No pre-processors configured.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            Text("No pre-processors configured.").font(.caption).foregroundStyle(.secondary)
         } else {
             ForEach(viewModel.config.preProcessors) { item in
                 ToggleableItemRow(
-                    item: item,
-                    icon: "gearshape",
-                    iconColor: .blue,
+                    item: item, icon: "gearshape", iconColor: .blue,
                     onToggle: { viewModel.togglePreProcessor(id: item.id) },
                     onDelete: { withAnimation { viewModel.removePreProcessor(id: item.id) } }
                 )
@@ -159,20 +133,14 @@ struct ArgumentsView: View {
         }
     }
 
-    // MARK: - Post-Processors List
-
     @ViewBuilder
     private var postProcessorsList: some View {
         if viewModel.config.postProcessors.isEmpty {
-            Text("No post-processors configured.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            Text("No post-processors configured.").font(.caption).foregroundStyle(.secondary)
         } else {
             ForEach(viewModel.config.postProcessors) { item in
                 ToggleableItemRow(
-                    item: item,
-                    icon: "gearshape.2",
-                    iconColor: .orange,
+                    item: item, icon: "gearshape.2", iconColor: .orange,
                     onToggle: { viewModel.togglePostProcessor(id: item.id) },
                     onDelete: { withAnimation { viewModel.removePostProcessor(id: item.id) } }
                 )
@@ -180,14 +148,10 @@ struct ArgumentsView: View {
         }
     }
 
-    // MARK: - Key-Value Pairs List
-
     @ViewBuilder
     private var keyValuePairsList: some View {
         if viewModel.config.keyValuePairs.isEmpty {
-            Text("No key-value pairs configured.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            Text("No key-value pairs configured.").font(.caption).foregroundStyle(.secondary)
         } else {
             ForEach(viewModel.config.keyValuePairs) { pair in
                 KeyValuePairRow(
@@ -200,18 +164,13 @@ struct ArgumentsView: View {
         }
     }
 
-    // MARK: - Source Packages List
-
     @ViewBuilder
     private var sourcePackagesList: some View {
         if viewModel.config.sourcePackages.isEmpty {
-            Text("No source packages configured.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            Text("No source packages configured.").font(.caption).foregroundStyle(.secondary)
         } else {
             ForEach(viewModel.config.sourcePackages) { item in
                 HStack {
-                    // Radio button — only one can be active
                     Button {
                         if item.isEnabled {
                             viewModel.disableSourcePackage(id: item.id)
@@ -232,16 +191,14 @@ struct ArgumentsView: View {
                     Text(item.name)
                         .font(.system(.body, design: .monospaced))
                         .foregroundStyle(item.isEnabled ? .primary : .secondary)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
+                        .lineLimit(1).truncationMode(.middle)
 
                     Spacer()
 
                     Button {
                         withAnimation { viewModel.removeSourcePackage(id: item.id) }
                     } label: {
-                        Image(systemName: "trash")
-                            .foregroundStyle(.red)
+                        Image(systemName: "trash").foregroundStyle(.red)
                     }
                     .buttonStyle(.plain)
                     .help("Remove source package")
@@ -250,8 +207,6 @@ struct ArgumentsView: View {
         }
     }
 
-    // MARK: - File Picker
-
     private func chooseSourcePackage() {
         let panel = NSOpenPanel()
         panel.title = "Choose a Source Package"
@@ -259,7 +214,6 @@ struct ArgumentsView: View {
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = false
         panel.canChooseFiles = true
-
         if panel.runModal() == .OK, let url = panel.url {
             viewModel.addSourcePackage(url.path)
         }
@@ -268,7 +222,6 @@ struct ArgumentsView: View {
 
 // MARK: - Toggleable Item Row
 
-/// A row displaying a named item with an enable/disable toggle and a delete button
 struct ToggleableItemRow: View {
     let item: ArgumentsConfig.ToggleableItem
     let icon: String
@@ -278,9 +231,7 @@ struct ToggleableItemRow: View {
 
     var body: some View {
         HStack {
-            Button {
-                onToggle()
-            } label: {
+            Button { onToggle() } label: {
                 Image(systemName: item.isEnabled ? "checkmark.circle.fill" : "circle")
                     .foregroundStyle(item.isEnabled ? .green : .secondary)
             }
@@ -297,11 +248,8 @@ struct ToggleableItemRow: View {
 
             Spacer()
 
-            Button {
-                onDelete()
-            } label: {
-                Image(systemName: "trash")
-                    .foregroundStyle(.red)
+            Button { onDelete() } label: {
+                Image(systemName: "trash").foregroundStyle(.red)
             }
             .buttonStyle(.plain)
             .help("Remove")
@@ -311,33 +259,23 @@ struct ToggleableItemRow: View {
 
 // MARK: - Add Item Field
 
-/// Reusable inline text field + add button for single-value entries
 struct AddItemField: View {
     let label: String
     let buttonLabel: String
     let onAdd: (String) -> Void
-
     @State private var text = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(label)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
+            Text(label).font(.caption).foregroundStyle(.secondary)
             HStack {
                 TextField("", text: $text)
                     .textFieldStyle(.roundedBorder)
                     .font(.system(.body, design: .monospaced))
-                    .onSubmit {
-                        addItem()
-                    }
-
-                Button(buttonLabel) {
-                    addItem()
-                }
-                .buttonStyle(.bordered)
-                .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .onSubmit { addItem() }
+                Button(buttonLabel) { addItem() }
+                    .buttonStyle(.bordered)
+                    .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
         }
     }
@@ -352,10 +290,8 @@ struct AddItemField: View {
 
 // MARK: - Add Key-Value Field
 
-/// Inline fields for adding a new key=value pair
 struct AddKeyValueField: View {
     let onAdd: (String, String) -> Void
-
     @State private var key = ""
     @State private var value = ""
 
@@ -366,20 +302,14 @@ struct AddKeyValueField: View {
                 .font(.system(.body, design: .monospaced))
                 .frame(minWidth: 120)
                 .onSubmit { addPair() }
-
-            Text("=")
-                .foregroundStyle(.secondary)
-
+            Text("=").foregroundStyle(.secondary)
             TextField("VALUE", text: $value)
                 .textFieldStyle(.roundedBorder)
                 .font(.system(.body, design: .monospaced))
                 .onSubmit { addPair() }
-
-            Button("Add") {
-                addPair()
-            }
-            .buttonStyle(.bordered)
-            .disabled(key.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            Button("Add") { addPair() }
+                .buttonStyle(.bordered)
+                .disabled(key.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
         }
     }
 
@@ -387,29 +317,24 @@ struct AddKeyValueField: View {
         let trimmedKey = key.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedKey.isEmpty else { return }
         onAdd(trimmedKey, value)
-        key = ""
-        value = ""
+        key = ""; value = ""
     }
 }
 
 // MARK: - Key-Value Pair Row
 
-/// Displays a key=value pair with enable/disable toggle, inline editing, and delete
 struct KeyValuePairRow: View {
     let pair: ArgumentsConfig.KeyValuePair
     let onToggle: () -> Void
     let onUpdate: (UUID, String, String) -> Void
     let onDelete: (UUID) -> Void
-
     @State private var isEditing = false
     @State private var editKey: String = ""
     @State private var editValue: String = ""
 
     var body: some View {
         HStack {
-            Button {
-                onToggle()
-            } label: {
+            Button { onToggle() } label: {
                 Image(systemName: pair.isEnabled ? "checkmark.circle.fill" : "circle")
                     .foregroundStyle(pair.isEnabled ? .green : .secondary)
             }
@@ -425,65 +350,42 @@ struct KeyValuePairRow: View {
                     .textFieldStyle(.roundedBorder)
                     .font(.system(.body, design: .monospaced))
                     .frame(minWidth: 100)
-
-                Text("=")
-                    .foregroundStyle(.secondary)
-
+                Text("=").foregroundStyle(.secondary)
                 TextField("VALUE", text: $editValue)
                     .textFieldStyle(.roundedBorder)
                     .font(.system(.body, design: .monospaced))
-
                 Button {
                     onUpdate(pair.id, editKey, editValue)
                     isEditing = false
                 } label: {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(.green)
+                    Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
                 }
                 .buttonStyle(.plain)
                 .disabled(editKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-
                 Button {
                     isEditing = false
                 } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.secondary)
+                    Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
                 }
                 .buttonStyle(.plain)
             } else {
                 Text(pair.key)
-                    .font(.system(.body, design: .monospaced))
-                    .fontWeight(.medium)
+                    .font(.system(.body, design: .monospaced)).fontWeight(.medium)
                     .foregroundStyle(pair.isEnabled ? .primary : .secondary)
-
-                Text("=")
-                    .foregroundStyle(.secondary)
-
+                Text("=").foregroundStyle(.secondary)
                 Text(pair.value)
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundStyle(.secondary)
-
+                    .font(.system(.body, design: .monospaced)).foregroundStyle(.secondary)
                 Spacer()
-
                 Button {
-                    editKey = pair.key
-                    editValue = pair.value
-                    isEditing = true
+                    editKey = pair.key; editValue = pair.value; isEditing = true
                 } label: {
-                    Image(systemName: "pencil")
-                        .foregroundStyle(.blue)
+                    Image(systemName: "pencil").foregroundStyle(.blue)
                 }
-                .buttonStyle(.plain)
-                .help("Edit key-value pair")
-
-                Button {
-                    onDelete(pair.id)
-                } label: {
-                    Image(systemName: "trash")
-                        .foregroundStyle(.red)
+                .buttonStyle(.plain).help("Edit key-value pair")
+                Button { onDelete(pair.id) } label: {
+                    Image(systemName: "trash").foregroundStyle(.red)
                 }
-                .buttonStyle(.plain)
-                .help("Remove key-value pair")
+                .buttonStyle(.plain).help("Remove key-value pair")
             }
         }
     }
