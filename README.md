@@ -64,8 +64,9 @@ The landing page shows a dashboard with counts of repos, recipes, and overrides,
 
 ![Arguments-2](images/Arguments%202.png)
 
-- Add any number of key-value pairs that will be passed as `--key value` arguments to every recipe run, with support for boolean flags (e.g. `0`/`1` or `true`/`false`)
-- Add source packages that can be passed as `--pkg` arguments, which can be stored and selected for use.
+- Add any number of key-value pairs that will be passed as `--key value` arguments to every recipe run, with support for boolean flags (e.g. `0`/`1` or `true`/`false`).
+- Each stored key-value pair can be enabled or disabled for individual runs.
+- Add source packages that can be passed as `--pkg` arguments, which can also be stored and (de-)selected for future use.
 - Command preview showing exactly what autopkg command will be run.
 
 ### Schedule
