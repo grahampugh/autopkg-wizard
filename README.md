@@ -62,7 +62,7 @@ The landing page shows a dashboard with counts of repos, recipes, and overrides,
 - Set recipe run verbosity level (default: Normal (`-v`))
 - Add pre- and post-processors to be run before/after every recipe.
 
-![Arguments](images/Arguments 2.png)
+![Arguments-2](images/Arguments%202.png)
 
 - Add any number of key-value pairs that will be passed as `--key value` arguments to every recipe run, with support for boolean flags (e.g. `0`/`1` or `true`/`false`)
 - Add source packages that can be passed as `--pkg` arguments, which can be stored and selected for use.
