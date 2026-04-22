@@ -18,7 +18,7 @@ A modern macOS SwiftUI application for managing [AutoPkg](https://github.com/aut
 
 ### Overview
 
-The landing page shows a dashboard with counts of repos, recipes, and overrides, along with the installed AutoPkg version. From here you can view and edit AutoPkg preferences stored in the `com.github.autopkg` defaults domain — add, edit, and delete key/value pairs directly.
+The landing page shows a dashboard with counts of repos, recipes, and overrides, along with the installed AutoPkg version. From here you can view and edit AutoPkg preferences stored in the `com.github.autopkg` defaults domain - add, edit, and delete key/value pairs directly.
 
 ### Repos
 
@@ -41,7 +41,7 @@ The landing page shows a dashboard with counts of repos, recipes, and overrides,
 - View detailed recipe info (parent recipes, processors, input values) via the info button
 - Create recipe overrides directly from the recipe list
 - Visual recipe type indicators (`.jamf`, `.munki`, `.download`, `.pkg`, `.install`)
-- Automatic `MakeCatalogs.munki` management — added to the end of the list when `.munki` recipes are present, along with the required `autopkg/recipes` repo and override
+- Automatic `MakeCatalogs.munki` management - added to the end of the list when `.munki` recipes are present, along with the required `autopkg/recipes` repo and override
 
 ### Overrides
 
