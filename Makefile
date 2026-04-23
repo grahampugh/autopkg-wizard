@@ -6,6 +6,16 @@
 #   make dmg          - Build distributable .dmg from existing release .app
 #   make github       - Create/update GitHub pre-release from existing .pkg and .dmg
 #   make clean        - Remove build artifacts
+#
+#   Override signing/notarization options:
+#   make release SIGN_ID_APP="Developer ID Application: Your Name" \
+#                SIGN_ID_PKG="Developer ID Installer: Your Name" \
+#                NOTARY_PROFILE=your-notarytool-profile
+#   or export once:
+#   export SIGN_ID_APP="Developer ID Application: Your Name"; \
+#   export SIGN_ID_PKG="Developer ID Installer: Your Name"; \
+#   export NOTARY_PROFILE=your-notarytool-profile; \
+#   make release
 
 SHELL        := /bin/bash
 APP_NAME     := AutoPkg Wizard
@@ -15,6 +25,15 @@ PROJECT      := AutoPkg Wizard/AutoPkg Wizard.xcodeproj
 SCHEME       := AutoPkg Wizard
 VERSION      := $(shell grep 'MARKETING_VERSION = ' "$(PROJECT)/project.pbxproj" | head -1 | sed 's/.*= //;s/;//;s/ //g')
 TAG          := v$(VERSION)
+
+SIGN_ID_APP    ?= Developer ID Application: Graham Pugh
+SIGN_ID_PKG    ?= Developer ID Installer: Graham Pugh
+NOTARY_PROFILE ?= graham-notary-profile
+TEAM_ID        ?=
+
+# Notes:
+# - NOTARY_PROFILE is a keychain profile configured via `xcrun notarytool store-credentials graham-notary-profile --apple-id <apple-id> --team-id <team-id> --password <app-specific-password>`
+# - If you prefer inline credentials, replace `--keychain-profile $(NOTARY_PROFILE)` with your choice of `--apple-id/--team-id/--password`.
 
 BUILD_DIR    := $(CURDIR)/.build
 OUTPUT_DIR   := output
@@ -27,7 +46,7 @@ DMG_NAME     := $(APP_SLUG)-$(VERSION).dmg
 DMG_PATH     := $(OUTPUT_DIR)/$(DMG_NAME)
 DMG_STAGING  := $(OUTPUT_DIR)/dmg-staging
 
-.PHONY: all debug release pkg dmg github clean clean-output _pkg _dmg
+.PHONY: all debug release pkg dmg github clean clean-output _pkg _dmg sign notarize _sign_app _notarize_app _staple_app _staple_artifacts
 
 # Default target: debug build
 all: debug
@@ -44,6 +63,40 @@ debug:
 		build
 	@echo "==> Debug app ready: $(DEBUG_APP)"
 
+# --- Internal: sign the built app -----------------------------------------
+_sign_app:
+	@if [ ! -d "$(RELEASE_APP)" ]; then \
+		echo "ERROR: Release app not found at $(RELEASE_APP)." >&2; \
+		exit 1; \
+	fi
+	@echo "==> Signing app with '$(SIGN_ID_APP)'…"
+	@/usr/bin/codesign \
+		--force --options runtime --timestamp \
+		--sign "$(SIGN_ID_APP)" \
+		--deep \
+		"$(RELEASE_APP)"
+	@echo "==> Verifying code signature…"
+	@/usr/bin/codesign --verify --deep --strict --verbose=2 "$(RELEASE_APP)"
+	@/usr/bin/xcrun spctl --assess --type execute --verbose "$(RELEASE_APP)" || true
+
+
+
+# --- Internal: notarize the signed app and staple --------------------------
+_notarize_app:
+	@if [ ! -d "$(RELEASE_APP)" ]; then \
+		echo "ERROR: Release app not found at $(RELEASE_APP)." >&2; \
+		exit 1; \
+	fi
+	@echo "==> Zipping app for notarization…"
+	@/usr/bin/ditto -c -k --keepParent "$(RELEASE_APP)" "$(OUTPUT_DIR)/$(APP_SLUG).zip"
+	@echo "==> Submitting to Apple notarization service…"
+	@/usr/bin/xcrun notarytool submit "$(OUTPUT_DIR)/$(APP_SLUG).zip" \
+		--keychain-profile "$(NOTARY_PROFILE)" \
+		--wait
+	@rm -f "$(OUTPUT_DIR)/$(APP_SLUG).zip"
+	@echo "==> Stapling notarization ticket to app…"
+	@/usr/bin/xcrun stapler staple -v "$(RELEASE_APP)"
+
 # --- Release build + installer package + dmg + GitHub release --------------
 release: clean-output
 	@echo "==> Building $(APP_NAME) $(VERSION) (release)…"
@@ -54,6 +107,10 @@ release: clean-output
 		-destination "platform=macOS" \
 		SYMROOT="$(BUILD_DIR)" \
 		build
+	@echo ""
+	@$(MAKE) --no-print-directory _sign_app
+	@echo ""
+	@$(MAKE) --no-print-directory _notarize_app
 	@echo ""
 	@$(MAKE) --no-print-directory _pkg
 	@echo ""
@@ -85,6 +142,13 @@ dmg:
 	@$(MAKE) --no-print-directory _dmg
 	@echo "==> Opening output folder…"
 	@open "$(OUTPUT_DIR)"
+
+# --- Sign and notarize only (from existing release app) --------------------
+sign:
+	@$(MAKE) --no-print-directory _sign_app
+
+notarize:
+	@$(MAKE) --no-print-directory _notarize_app
 
 # --- Create / update GitHub pre-release ------------------------------------
 github:
@@ -123,6 +187,7 @@ _pkg:
 		--install-location /Applications \
 		--identifier "$(BUNDLE_ID)" \
 		--version "$(VERSION)" \
+		--sign "$(SIGN_ID_APP)" \
 		"$(COMPONENT)"
 	@echo "==> Writing distribution XML…"
 	@( \
@@ -147,9 +212,12 @@ _pkg:
 	@productbuild \
 		--distribution "$(OUTPUT_DIR)/distribution.xml" \
 		--package-path "$(OUTPUT_DIR)" \
+		--sign "$(SIGN_ID_PKG)" \
 		"$(PKG_PATH)"
 	@rm -f "$(COMPONENT)" "$(OUTPUT_DIR)/distribution.xml"
 	@echo "==> Installer package ready: $(PKG_PATH)"
+	@echo "==> Stapling notarization ticket to pkg…"
+	@/usr/bin/xcrun stapler staple -v "$(PKG_PATH)" || true
 
 # --- Internal: create the .dmg ---------------------------------------------
 _dmg:
@@ -167,6 +235,8 @@ _dmg:
 		-format UDZO \
 		-imagekey zlib-level=9 \
 		"$(DMG_PATH)"
+	@echo "==> Stapling notarization ticket to dmg…"
+	@/usr/bin/xcrun stapler staple -v "$(DMG_PATH)" || true
 	@rm -rf "$(DMG_STAGING)"
 	@echo "==> Disk image ready: $(DMG_PATH)"
 
@@ -178,3 +248,4 @@ clean:
 
 clean-output:
 	@rm -rf "$(OUTPUT_DIR)"
+
