@@ -69,11 +69,18 @@ _sign_app:
 		echo "ERROR: Release app not found at $(RELEASE_APP)." >&2; \
 		exit 1; \
 	fi
-	@echo "==> Signing app with '$(SIGN_ID_APP)'…"
+	@echo "==> Signing embedded frameworks and libraries…"
+	@find "$(RELEASE_APP)/Contents/Frameworks" -maxdepth 1 \
+		\( -name "*.framework" -o -name "*.dylib" \) 2>/dev/null | \
+		while IFS= read -r item; do \
+			echo "    signing: $$item"; \
+			/usr/bin/codesign --force --options runtime --timestamp \
+				--sign "$(SIGN_ID_APP)" "$$item"; \
+		done
+	@echo "==> Signing app bundle with '$(SIGN_ID_APP)'…"
 	@/usr/bin/codesign \
 		--force --options runtime --timestamp \
 		--sign "$(SIGN_ID_APP)" \
-		--deep \
 		"$(RELEASE_APP)"
 	@echo "==> Verifying code signature…"
 	@/usr/bin/codesign --verify --deep --strict --verbose=2 "$(RELEASE_APP)"
@@ -187,7 +194,7 @@ _pkg:
 		--install-location /Applications \
 		--identifier "$(BUNDLE_ID)" \
 		--version "$(VERSION)" \
-		--sign "$(SIGN_ID_APP)" \
+		--sign "$(SIGN_ID_PKG)" \
 		"$(COMPONENT)"
 	@echo "==> Writing distribution XML…"
 	@( \
