@@ -97,9 +97,18 @@ _notarize_app:
 	@echo "==> Zipping app for notarization…"
 	@/usr/bin/ditto -c -k --keepParent "$(RELEASE_APP)" "$(OUTPUT_DIR)/$(APP_SLUG).zip"
 	@echo "==> Submitting to Apple notarization service…"
-	@/usr/bin/xcrun notarytool submit "$(OUTPUT_DIR)/$(APP_SLUG).zip" \
-		--keychain-profile "$(NOTARY_PROFILE)" \
-		--wait
+	@submission_id=$$( \
+		/usr/bin/xcrun notarytool submit "$(OUTPUT_DIR)/$(APP_SLUG).zip" \
+			--keychain-profile "$(NOTARY_PROFILE)" \
+			--output-format json \
+		| /usr/bin/jq -r '.id' \
+	); \
+	echo "==> Submission ID: $$submission_id"; \
+	echo "    (if this hangs, run: xcrun notarytool log $$submission_id --keychain-profile $(NOTARY_PROFILE))"; \
+	/usr/bin/xcrun notarytool wait "$$submission_id" \
+		--keychain-profile "$(NOTARY_PROFILE)"; \
+	/usr/bin/xcrun notarytool log "$$submission_id" \
+		--keychain-profile "$(NOTARY_PROFILE)"
 	@rm -f "$(OUTPUT_DIR)/$(APP_SLUG).zip"
 	@echo "==> Stapling notarization ticket to app…"
 	@/usr/bin/xcrun stapler staple -v "$(RELEASE_APP)"
