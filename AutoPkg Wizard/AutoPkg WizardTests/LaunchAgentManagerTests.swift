@@ -26,33 +26,27 @@ struct LaunchAgentManagerTests {
         #expect(LaunchAgentManager.nextRunDate(for: config) == nil)
     }
 
-    @Test func nextRunDateIsInFutureForEnabledSchedule() {
+    @Test func nextRunDateIsInFutureForEnabledSchedule() throws {
         var config = LaunchAgentManager.ScheduleConfig()
         config.isEnabled = true
         config.hour = 9
         config.minute = 0
         config.selectedDays = Set(0...6)
 
-        let next = LaunchAgentManager.nextRunDate(for: config)
-        #expect(next != nil)
-        if let next {
-            #expect(next > Date())
-        }
+        let next = try #require(LaunchAgentManager.nextRunDate(for: config))
+        #expect(next > Date())
     }
 
-    @Test func nextRunDateMatchesConfiguredHourAndMinute() {
+    @Test func nextRunDateMatchesConfiguredHourAndMinute() throws {
         var config = LaunchAgentManager.ScheduleConfig()
         config.isEnabled = true
         config.hour = 14
         config.minute = 30
         config.selectedDays = Set(0...6)
 
-        let next = LaunchAgentManager.nextRunDate(for: config)
-        #expect(next != nil)
-        if let next {
-            let components = Calendar.current.dateComponents([.hour, .minute], from: next)
-            #expect(components.hour == 14)
-            #expect(components.minute == 30)
-        }
+        let next = try #require(LaunchAgentManager.nextRunDate(for: config))
+        let components = Calendar.current.dateComponents([.hour, .minute], from: next)
+        #expect(components.hour == 14)
+        #expect(components.minute == 30)
     }
 }

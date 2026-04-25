@@ -1,24 +1,18 @@
 import Testing
 @testable import AutoPkg_Wizard
 
-@Suite("RecipesViewModel", .serialized)
+@Suite("RecipesViewModel")
 @MainActor
 struct RecipesViewModelTests {
 
-    @Test func strippedRecipeNameRemovesPlainRecipeSuffix() {
-        #expect(RecipesViewModel.strippedRecipeName("Firefox.munki.recipe") == "Firefox.munki")
-    }
-
-    @Test func strippedRecipeNameRemovesYamlSuffix() {
-        #expect(RecipesViewModel.strippedRecipeName("Firefox.munki.recipe.yaml") == "Firefox.munki")
-    }
-
-    @Test func strippedRecipeNameRemovesPlistSuffix() {
-        #expect(RecipesViewModel.strippedRecipeName("Firefox.munki.recipe.plist") == "Firefox.munki")
-    }
-
-    @Test func strippedRecipeNameLeavesBareIdentifierUnchanged() {
-        #expect(RecipesViewModel.strippedRecipeName("Firefox.munki") == "Firefox.munki")
+    @Test(arguments: [
+        ("Firefox.munki.recipe", "Firefox.munki"),
+        ("Firefox.munki.recipe.yaml", "Firefox.munki"),
+        ("Firefox.munki.recipe.plist", "Firefox.munki"),
+        ("Firefox.munki", "Firefox.munki"),
+    ])
+    func strippedRecipeNameRemovesKnownSuffixes(input: String, expected: String) {
+        #expect(RecipesViewModel.strippedRecipeName(input) == expected)
     }
 
     @Test func isInRecipeListMatchesAcrossSuffixVariants() {

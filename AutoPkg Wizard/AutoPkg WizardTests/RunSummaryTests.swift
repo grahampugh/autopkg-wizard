@@ -5,7 +5,7 @@ import Testing
 @Suite("RunSummary")
 struct RunSummaryTests {
 
-    @Test func extractsBuiltPackagesAndDownloads() {
+    @Test func extractsBuiltPackagesAndDownloads() throws {
         let output = """
         Processing Firefox.download...
         ... (lots of recipe output)
@@ -21,18 +21,17 @@ struct RunSummaryTests {
             com.example.firefox                       130.0    /pkgs/Firefox-130.0.pkg
         """
 
-        let summary = RunSummary.extract(from: output)
-        #expect(summary != nil)
-        #expect(summary?.downloadedItems.count == 1)
-        #expect(summary?.downloadedItems.first?.path == "/tmp/Firefox-130.0.dmg")
-        #expect(summary?.builtPackages.count == 1)
-        #expect(summary?.builtPackages.first?.identifier == "com.example.firefox")
-        #expect(summary?.builtPackages.first?.version == "130.0")
-        #expect(summary?.builtPackages.first?.path == "/pkgs/Firefox-130.0.pkg")
-        #expect(summary?.failedRecipes.isEmpty == true)
+        let summary = try #require(RunSummary.extract(from: output))
+        #expect(summary.downloadedItems.map(\.path) == ["/tmp/Firefox-130.0.dmg"])
+        #expect(summary.builtPackages.count == 1)
+        let built = try #require(summary.builtPackages.first)
+        #expect(built.identifier == "com.example.firefox")
+        #expect(built.version == "130.0")
+        #expect(built.path == "/pkgs/Firefox-130.0.pkg")
+        #expect(summary.failedRecipes.isEmpty)
     }
 
-    @Test func extractsFailedRecipesWithReasons() {
+    @Test func extractsFailedRecipesWithReasons() throws {
         let output = """
         Processing began.
 
@@ -40,10 +39,11 @@ struct RunSummaryTests {
             Firefox.munki
                 No recipe found.
         """
-        let summary = RunSummary.extract(from: output)
-        #expect(summary?.failedRecipes.count == 1)
-        #expect(summary?.failedRecipes.first?.name == "Firefox.munki")
-        #expect(summary?.failedRecipes.first?.reason == "No recipe found.")
+        let summary = try #require(RunSummary.extract(from: output))
+        #expect(summary.failedRecipes.count == 1)
+        let failed = try #require(summary.failedRecipes.first)
+        #expect(failed.name == "Firefox.munki")
+        #expect(failed.reason == "No recipe found.")
     }
 
     @Test func extractReturnsNilWhenNoSummarySectionPresent() {

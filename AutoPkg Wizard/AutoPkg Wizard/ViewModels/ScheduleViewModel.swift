@@ -16,8 +16,8 @@ final class ScheduleViewModel {
     var lastRunSummary: RunSummary?
     var showSummary = false
 
-    init() {
-        schedule = LaunchAgentManager.loadScheduleConfig()
+    init(schedule: LaunchAgentManager.ScheduleConfig = LaunchAgentManager.loadScheduleConfig()) {
+        self.schedule = schedule
         updateNextRun()
     }
 

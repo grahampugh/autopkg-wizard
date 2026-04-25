@@ -5,34 +5,27 @@ import Testing
 @Suite("AutoPkgOverride")
 struct AutoPkgOverrideTests {
 
-    @Test func recipeNameStripsRecipeSuffix() {
-        let override = AutoPkgOverride(filePath: "/tmp/Firefox.munki.recipe", fileName: "Firefox.munki.recipe")
-        #expect(override.recipeName == "Firefox.munki")
-    }
-
-    @Test func recipeNameStripsYamlSuffix() {
-        let override = AutoPkgOverride(filePath: "/tmp/Firefox.munki.recipe.yaml", fileName: "Firefox.munki.recipe.yaml")
-        #expect(override.recipeName == "Firefox.munki")
-    }
-
-    @Test func recipeNameStripsPlistSuffix() {
-        let override = AutoPkgOverride(filePath: "/tmp/Firefox.munki.recipe.plist", fileName: "Firefox.munki.recipe.plist")
-        #expect(override.recipeName == "Firefox.munki")
+    @Test(arguments: [
+        ("Firefox.munki.recipe", "Firefox.munki"),
+        ("Firefox.munki.recipe.yaml", "Firefox.munki"),
+        ("Firefox.munki.recipe.plist", "Firefox.munki"),
+    ])
+    func recipeNameStripsKnownSuffixes(fileName: String, expected: String) {
+        let override = AutoPkgOverride(filePath: "/tmp/\(fileName)", fileName: fileName)
+        #expect(override.recipeName == expected)
     }
 
     @Test func listOverridesReadsRecipeFilesFromDirectory() throws {
         let tmp = try makeTempDirectory()
-        defer { try? FileManager.default.removeItem(atPath: tmp) }
+        defer { try? FileManager.default.removeItem(at: tmp) }
 
-        // Three valid recipe overrides + one unrelated file
-        try "".write(toFile: (tmp as NSString).appendingPathComponent("A.munki.recipe"), atomically: true, encoding: .utf8)
-        try "".write(toFile: (tmp as NSString).appendingPathComponent("B.download.recipe.yaml"), atomically: true, encoding: .utf8)
-        try "".write(toFile: (tmp as NSString).appendingPathComponent("C.pkg.recipe.plist"), atomically: true, encoding: .utf8)
-        try "".write(toFile: (tmp as NSString).appendingPathComponent("ignore.txt"), atomically: true, encoding: .utf8)
+        let recipeFiles = ["A.munki.recipe", "B.download.recipe.yaml", "C.pkg.recipe.plist"]
+        for name in recipeFiles + ["ignore.txt"] {
+            try Data().write(to: tmp.appendingPathComponent(name))
+        }
 
-        let overrides = AutoPkgOverride.listOverrides(in: tmp)
-        let names = overrides.map(\.fileName).sorted()
-        #expect(names == ["A.munki.recipe", "B.download.recipe.yaml", "C.pkg.recipe.plist"])
+        let overrides = AutoPkgOverride.listOverrides(in: tmp.path)
+        #expect(overrides.map(\.fileName).sorted() == recipeFiles.sorted())
     }
 
     @Test func listOverridesReturnsEmptyForMissingDirectory() {
@@ -40,9 +33,10 @@ struct AutoPkgOverrideTests {
         #expect(overrides.isEmpty)
     }
 
-    private func makeTempDirectory() throws -> String {
-        let path = NSTemporaryDirectory() + "AutoPkgWizardTests-\(UUID().uuidString)"
-        try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: true)
-        return path
+    private func makeTempDirectory() throws -> URL {
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("AutoPkgWizardTests-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        return url
     }
 }

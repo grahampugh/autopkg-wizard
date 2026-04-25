@@ -2,25 +2,29 @@ import Foundation
 import Testing
 @testable import AutoPkg_Wizard
 
-@Suite("ScheduleViewModel", .serialized)
+@Suite("ScheduleViewModel")
 @MainActor
 struct ScheduleViewModelTests {
 
+    private func makeViewModel() -> ScheduleViewModel {
+        ScheduleViewModel(schedule: LaunchAgentManager.ScheduleConfig())
+    }
+
     @Test func selectAllDaysSetsEveryWeekday() {
-        let vm = ScheduleViewModel()
+        let vm = makeViewModel()
         vm.schedule.selectedDays = [1]
         vm.selectAllDays()
         #expect(vm.schedule.selectedDays == Set(0...6))
     }
 
     @Test func selectWeekdaysOnlyExcludesWeekends() {
-        let vm = ScheduleViewModel()
+        let vm = makeViewModel()
         vm.selectWeekdaysOnly()
         #expect(vm.schedule.selectedDays == Set(1...5))
     }
 
     @Test func toggleDayAddsThenRemovesDay() {
-        let vm = ScheduleViewModel()
+        let vm = makeViewModel()
         vm.schedule.selectedDays = [1, 2, 3]
 
         vm.toggleDay(4)
@@ -31,18 +35,18 @@ struct ScheduleViewModelTests {
     }
 
     @Test func toggleDayRefusesToEmptyTheSelection() {
-        let vm = ScheduleViewModel()
+        let vm = makeViewModel()
         vm.schedule.selectedDays = [3]
         vm.toggleDay(3)
         #expect(vm.schedule.selectedDays == [3])
     }
 
-    @Test func selectedTimeSetterUpdatesHourAndMinute() {
-        let vm = ScheduleViewModel()
+    @Test func selectedTimeSetterUpdatesHourAndMinute() throws {
+        let vm = makeViewModel()
         var components = DateComponents()
         components.hour = 7
         components.minute = 45
-        let date = Calendar.current.date(from: components)!
+        let date = try #require(Calendar.current.date(from: components))
 
         vm.selectedTime = date
 
