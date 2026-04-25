@@ -1,19 +1,8 @@
-//
-//  AutoPkg_WizardTests.swift
-//  AutoPkg WizardTests
-//
-//  Created by Graham Pugh on 22.04.26.
-//
-
 import Testing
 @testable import AutoPkg_Wizard
 
-struct AutoPkg_WizardTests {
-
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-        // Swift Testing Documentation
-        // https://developer.apple.com/documentation/testing
-    }
-
+/// Smoke test that the test target links against the app and Swift Testing is wired up.
+@Test func sidebarItemsAreUnique() {
+    let ids = SidebarItem.allCases.map(\.id)
+    #expect(Set(ids).count == ids.count)
 }
