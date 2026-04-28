@@ -220,30 +220,6 @@ staple: staple-app
 		echo "==> Pkg not found, skipping pkg stapling"; \
 	fi
 
-# --- Release build + installer package + dmg + GitHub release --------------
-release: clean-output
-	@echo "==> Building $(APP_NAME) $(VERSION) (release)…"
-	@xcodebuild \
-		-project "$(PROJECT)" \
-		-scheme "$(SCHEME)" \
-		-configuration Release \
-		-destination "platform=macOS" \
-		SYMROOT="$(BUILD_DIR)" \
-		build
-	@echo ""
-	@$(MAKE) --no-print-directory _sign_app
-	@echo ""
-	@$(MAKE) --no-print-directory _notarize_app
-	@echo ""
-	@$(MAKE) --no-print-directory _pkg
-	@echo ""
-	@$(MAKE) --no-print-directory _dmg
-	@echo ""
-	@$(MAKE) --no-print-directory github
-	@echo ""
-	@echo "==> Opening output folder…"
-	@open "$(OUTPUT_DIR)"
-
 # --- Build pkg from existing release app -----------------------------------
 pkg:
 	@if [ ! -d "$(RELEASE_APP)" ]; then \
@@ -265,13 +241,6 @@ dmg:
 	@$(MAKE) --no-print-directory _dmg
 	@echo "==> Opening output folder…"
 	@open "$(OUTPUT_DIR)"
-
-# --- Sign and notarize only (from existing release app) --------------------
-sign:
-	@$(MAKE) --no-print-directory _sign_app
-
-notarize:
-	@$(MAKE) --no-print-directory _notarize_app
 
 # --- Create / update GitHub pre-release ------------------------------------
 github:
@@ -301,7 +270,6 @@ github:
 		--generate-notes
 	@echo "==> GitHub pre-release $(TAG) created."
 
-# --- Internal: create the .pkg ---------------------------------------------
 # --- Internal: create the .pkg ---------------------------------------------
 _pkg:
 	@mkdir -p "$(OUTPUT_DIR)"
