@@ -28,8 +28,8 @@ TAG          := v$(VERSION)
 
 SIGN_ID_APP    ?= Developer ID Application: Graham Pugh
 SIGN_ID_PKG    ?= Developer ID Installer: Graham Pugh
-NOTARY_PROFILE ?= graham-notary-profile
-TEAM_ID        ?=
+NOTARY_PROFILE ?= graham-notary-profile-autopkg-wizard
+TEAM_ID        ?= C96ALZKYH6
 
 # Notes:
 # - NOTARY_PROFILE is a keychain profile configured via `xcrun notarytool store-credentials graham-notary-profile --apple-id <apple-id> --team-id <team-id> --password <app-specific-password>`
@@ -46,7 +46,7 @@ DMG_NAME     := $(APP_SLUG)-$(VERSION).dmg
 DMG_PATH     := $(OUTPUT_DIR)/$(DMG_NAME)
 DMG_STAGING  := $(OUTPUT_DIR)/dmg-staging
 
-.PHONY: all debug release pkg dmg github clean clean-output _pkg _dmg sign notarize _sign_app _notarize_app _staple_app _staple_artifacts
+.PHONY: all debug release pkg dmg github clean clean-output _pkg _dmg sign notarize notarize-app notarize-pkg staple staple-app staple-pkg _sign_app _notarize_app _notarize_pkg _staple_app _staple_pkg _staple_artifacts
 
 # Default target: debug build
 all: debug
@@ -90,28 +90,139 @@ _sign_app:
 
 # --- Internal: notarize the signed app and staple --------------------------
 _notarize_app:
-	@if [ ! -d "$(RELEASE_APP)" ]; then \
-		echo "ERROR: Release app not found at $(RELEASE_APP)." >&2; \
-		exit 1; \
-	fi
-	@echo "==> Zipping app for notarization…"
-	@/usr/bin/ditto -c -k --keepParent "$(RELEASE_APP)" "$(OUTPUT_DIR)/$(APP_SLUG).zip"
-	@echo "==> Submitting to Apple notarization service…"
-	@submission_id=$$( \
-		/usr/bin/xcrun notarytool submit "$(OUTPUT_DIR)/$(APP_SLUG).zip" \
-			--keychain-profile "$(NOTARY_PROFILE)" \
-			--output-format json \
-		| /usr/bin/jq -r '.id' \
-	); \
-	echo "==> Submission ID: $$submission_id"; \
-	echo "    (if this hangs, run: xcrun notarytool log $$submission_id --keychain-profile $(NOTARY_PROFILE))"; \
-	/usr/bin/xcrun notarytool wait "$$submission_id" \
-		--keychain-profile "$(NOTARY_PROFILE)"; \
-	/usr/bin/xcrun notarytool log "$$submission_id" \
-		--keychain-profile "$(NOTARY_PROFILE)"
-	@rm -f "$(OUTPUT_DIR)/$(APP_SLUG).zip"
-	@echo "==> Stapling notarization ticket to app…"
-	@/usr/bin/xcrun stapler staple -v "$(RELEASE_APP)"
+    @if [ ! -d "$(RELEASE_APP)" ]; then \
+        echo "ERROR: Release app not found at $(RELEASE_APP)." >&2; \
+        exit 1; \
+    fi
+    @echo "==> Zipping app for notarization…"
+    @mkdir -p "$(OUTPUT_DIR)"
+    @/usr/bin/ditto -c -k --keepParent "$(RELEASE_APP)" "$(OUTPUT_DIR)/$(APP_SLUG).zip"
+    @echo "==> Submitting app to Apple notarization service…"
+    @submission_id=$$( \
+        /usr/bin/xcrun notarytool submit "$(OUTPUT_DIR)/$(APP_SLUG).zip" \
+            --keychain-profile "$(NOTARY_PROFILE)" \
+            --output-format json \
+        | /usr/bin/jq -r '.id' \
+    ); \
+    echo "==> App Submission ID: $$submission_id"; \
+    echo "$$submission_id" > "$(OUTPUT_DIR)/.app-submission-id"; \
+    echo "    Submission ID saved to $(OUTPUT_DIR)/.app-submission-id"; \
+    echo "    To check status: xcrun notarytool wait $$submission_id --keychain-profile $(NOTARY_PROFILE)"; \
+    echo "    To staple later: make staple-app"; \
+    /usr/bin/xcrun notarytool wait "$$submission_id" \
+        --keychain-profile "$(NOTARY_PROFILE)"; \
+    /usr/bin/xcrun notarytool log "$$submission_id" \
+        --keychain-profile "$(NOTARY_PROFILE)"
+    @rm -f "$(OUTPUT_DIR)/$(APP_SLUG).zip"
+
+# --- Internal: staple the notarized app ------------------------------------
+_staple_app:
+    @if [ ! -d "$(RELEASE_APP)" ]; then \
+        echo "ERROR: Release app not found at $(RELEASE_APP)." >&2; \
+        exit 1; \
+    fi
+    @echo "==> Stapling notarization ticket to app…"
+    @/usr/bin/xcrun stapler staple -v "$(RELEASE_APP)"
+
+# --- Internal: notarize the signed pkg -------------------------------------
+_notarize_pkg:
+    @if [ ! -f "$(PKG_PATH)" ]; then \
+        echo "ERROR: Package not found at $(PKG_PATH)." >&2; \
+        exit 1; \
+    fi
+    @echo "==> Submitting pkg to Apple notarization service…"
+    @submission_id=$$( \
+        /usr/bin/xcrun notarytool submit "$(PKG_PATH)" \
+            --keychain-profile "$(NOTARY_PROFILE)" \
+            --output-format json \
+        | /usr/bin/jq -r '.id' \
+    ); \
+    echo "==> Pkg Submission ID: $$submission_id"; \
+    echo "$$submission_id" > "$(OUTPUT_DIR)/.pkg-submission-id"; \
+    echo "    Submission ID saved to $(OUTPUT_DIR)/.pkg-submission-id"; \
+    echo "    To check status: xcrun notarytool wait $$submission_id --keychain-profile $(NOTARY_PROFILE)"; \
+    echo "    To staple later: make staple-pkg"; \
+    /usr/bin/xcrun notarytool wait "$$submission_id" \
+        --keychain-profile "$(NOTARY_PROFILE)"; \
+    /usr/bin/xcrun notarytool log "$$submission_id" \
+        --keychain-profile "$(NOTARY_PROFILE)"
+
+# --- Internal: staple the notarized pkg ------------------------------------
+_staple_pkg:
+    @if [ ! -f "$(PKG_PATH)" ]; then \
+        echo "ERROR: Package not found at $(PKG_PATH)." >&2; \
+        exit 1; \
+    fi
+    @echo "==> Stapling notarization ticket to pkg…"
+    @/usr/bin/xcrun stapler staple -v "$(PKG_PATH)"
+
+# --- Release build + sign + notarize + staple + pkg + dmg + GitHub release -
+release: clean-output
+    @echo "==> Building $(APP_NAME) $(VERSION) (release)…"
+    @xcodebuild \
+        -project "$(PROJECT)" \
+        -scheme "$(SCHEME)" \
+        -configuration Release \
+        -destination "platform=macOS" \
+        SYMROOT="$(BUILD_DIR)" \
+        build
+    @echo ""
+    @$(MAKE) --no-print-directory _sign_app
+    @echo ""
+    @$(MAKE) --no-print-directory _notarize_app
+    @echo ""
+    @$(MAKE) --no-print-directory _staple_app
+    @echo ""
+    @$(MAKE) --no-print-directory _pkg
+    @echo ""
+    @$(MAKE) --no-print-directory _notarize_pkg
+    @echo ""
+    @$(MAKE) --no-print-directory _staple_pkg
+    @echo ""
+    @$(MAKE) --no-print-directory _dmg
+    @echo ""
+    @$(MAKE) --no-print-directory github
+    @echo ""
+    @echo "==> Opening output folder…"
+    @open "$(OUTPUT_DIR)"
+
+// ...existing code...
+
+# --- Sign and notarize only (from existing release app) --------------------
+sign:
+    @$(MAKE) --no-print-directory _sign_app
+
+# Notarize app only (does not staple)
+notarize-app:
+    @$(MAKE) --no-print-directory _notarize_app
+
+# Notarize pkg only (does not staple)
+notarize-pkg:
+    @$(MAKE) --no-print-directory _notarize_pkg
+
+# Notarize both app and pkg (does not staple)
+notarize: notarize-app
+    @if [ -f "$(PKG_PATH)" ]; then \
+        $(MAKE) --no-print-directory notarize-pkg; \
+    else \
+        echo "==> Pkg not found, skipping pkg notarization"; \
+    fi
+
+# Staple app only
+staple-app:
+    @$(MAKE) --no-print-directory _staple_app
+
+# Staple pkg only
+staple-pkg:
+    @$(MAKE) --no-print-directory _staple_pkg
+
+# Staple both app and pkg
+staple: staple-app
+    @if [ -f "$(PKG_PATH)" ]; then \
+        $(MAKE) --no-print-directory staple-pkg; \
+    else \
+        echo "==> Pkg not found, skipping pkg stapling"; \
+    fi
 
 # --- Release build + installer package + dmg + GitHub release --------------
 release: clean-output
@@ -195,45 +306,44 @@ github:
 	@echo "==> GitHub pre-release $(TAG) created."
 
 # --- Internal: create the .pkg ---------------------------------------------
+# --- Internal: create the .pkg ---------------------------------------------
 _pkg:
-	@mkdir -p "$(OUTPUT_DIR)"
-	@echo "==> Creating component package…"
-	@pkgbuild \
-		--component "$(RELEASE_APP)" \
-		--install-location /Applications \
-		--identifier "$(BUNDLE_ID)" \
-		--version "$(VERSION)" \
-		--sign "$(SIGN_ID_PKG)" \
-		"$(COMPONENT)"
-	@echo "==> Writing distribution XML…"
-	@( \
-		echo '<?xml version="1.0" encoding="utf-8"?>'; \
-		echo '<installer-gui-script minSpecVersion="2">'; \
-		echo '    <title>$(APP_NAME)</title>'; \
-		echo '    <pkg-ref id="$(BUNDLE_ID)"/>'; \
-		echo '    <options customize="never" require-scripts="false" rootVolumeOnly="true"/>'; \
-		echo '    <choices-outline>'; \
-		echo '        <line choice="default">'; \
-		echo '            <line choice="$(BUNDLE_ID)"/>'; \
-		echo '        </line>'; \
-		echo '    </choices-outline>'; \
-		echo '    <choice id="default"/>'; \
-		echo '    <choice id="$(BUNDLE_ID)" visible="false">'; \
-		echo '        <pkg-ref id="$(BUNDLE_ID)"/>'; \
-		echo '    </choice>'; \
-		echo '    <pkg-ref id="$(BUNDLE_ID)" version="$(VERSION)" onConclusion="none">$(notdir $(COMPONENT))</pkg-ref>'; \
-		echo '</installer-gui-script>'; \
-	) > "$(OUTPUT_DIR)/distribution.xml"
-	@echo "==> Creating distribution installer package $(PKG_NAME)…"
-	@productbuild \
-		--distribution "$(OUTPUT_DIR)/distribution.xml" \
-		--package-path "$(OUTPUT_DIR)" \
-		--sign "$(SIGN_ID_PKG)" \
-		"$(PKG_PATH)"
-	@rm -f "$(COMPONENT)" "$(OUTPUT_DIR)/distribution.xml"
-	@echo "==> Installer package ready: $(PKG_PATH)"
-	@echo "==> Stapling notarization ticket to pkg…"
-	@/usr/bin/xcrun stapler staple -v "$(PKG_PATH)" || true
+    @mkdir -p "$(OUTPUT_DIR)"
+    @echo "==> Creating component package…"
+    @pkgbuild \
+        --component "$(RELEASE_APP)" \
+        --install-location /Applications \
+        --identifier "$(BUNDLE_ID)" \
+        --version "$(VERSION)" \
+        --sign "$(SIGN_ID_PKG)" \
+        "$(COMPONENT)"
+    @echo "==> Writing distribution XML…"
+    @( \
+        echo '<?xml version="1.0" encoding="utf-8"?>'; \
+        echo '<installer-gui-script minSpecVersion="2">'; \
+        echo '    <title>$(APP_NAME)</title>'; \
+        echo '    <pkg-ref id="$(BUNDLE_ID)"/>'; \
+        echo '    <options customize="never" require-scripts="false" rootVolumeOnly="true"/>'; \
+        echo '    <choices-outline>'; \
+        echo '        <line choice="default">'; \
+        echo '            <line choice="$(BUNDLE_ID)"/>'; \
+        echo '        </line>'; \
+        echo '    </choices-outline>'; \
+        echo '    <choice id="default"/>'; \
+        echo '    <choice id="$(BUNDLE_ID)" visible="false">'; \
+        echo '        <pkg-ref id="$(BUNDLE_ID)"/>'; \
+        echo '    </choice>'; \
+        echo '    <pkg-ref id="$(BUNDLE_ID)" version="$(VERSION)" onConclusion="none">$(notdir $(COMPONENT))</pkg-ref>'; \
+        echo '</installer-gui-script>'; \
+    ) > "$(OUTPUT_DIR)/distribution.xml"
+    @echo "==> Creating distribution installer package $(PKG_NAME)…"
+    @productbuild \
+        --distribution "$(OUTPUT_DIR)/distribution.xml" \
+        --package-path "$(OUTPUT_DIR)" \
+        --sign "$(SIGN_ID_PKG)" \
+        "$(PKG_PATH)"
+    @rm -f "$(COMPONENT)" "$(OUTPUT_DIR)/distribution.xml"
+    @echo "==> Installer package ready: $(PKG_PATH)"
 
 # --- Internal: create the .dmg ---------------------------------------------
 _dmg:
