@@ -325,8 +325,6 @@ _dmg:
 		-format UDZO \
 		-imagekey zlib-level=9 \
 		"$(DMG_PATH)"
-	@echo "==> Stapling notarization ticket to dmg…"
-	@/usr/bin/xcrun stapler staple -v "$(DMG_PATH)" || true
 	@rm -rf "$(DMG_STAGING)"
 	@echo "==> Disk image ready: $(DMG_PATH)"
 
