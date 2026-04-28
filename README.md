@@ -22,7 +22,6 @@ Finally, you can schedule an automatic daily run of your recipe list, which crea
 ## Installation
 
 - Grab the `dmg` or `pkg` from the latest release on the [Releases](https://github.com/grahampugh/autopkg-wizard/releases) page.
-- Note that the app is not currently signed or notarized. You may need to allow the app or package to be launched via System Settings > Security & Privacy.
 
 ## Features
 
