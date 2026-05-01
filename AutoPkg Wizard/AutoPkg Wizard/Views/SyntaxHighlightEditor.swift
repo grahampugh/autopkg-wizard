@@ -2,11 +2,59 @@ import AppKit
 import Highlightr
 import SwiftUI
 
+/// Manages the user's preferred syntax highlighting themes.
+/// Automatically adapts to light/dark mode with separate theme preferences.
+@MainActor
+@Observable
+final class SyntaxThemeManager {
+    static let shared = SyntaxThemeManager()
+
+    private static let lightThemeKey = "syntaxThemeLight"
+    private static let darkThemeKey = "syntaxThemeDark"
+
+    var lightTheme: String {
+        didSet { UserDefaults.standard.set(lightTheme, forKey: Self.lightThemeKey) }
+    }
+
+    var darkTheme: String {
+        didSet { UserDefaults.standard.set(darkTheme, forKey: Self.darkThemeKey) }
+    }
+
+    /// Cached list of available Highlightr themes
+    let availableThemes: [String]
+
+    /// Common dark themes suitable for dark mode
+    static let recommendedDarkThemes: Set<String> = [
+        "atom-one-dark", "dracula", "monokai", "vs2015",
+        "tomorrow-night", "github-dark", "nord", "ocean",
+        "zenburn", "solarized-dark", "gruvbox-dark",
+    ]
+
+    /// Common light themes suitable for light mode
+    static let recommendedLightThemes: Set<String> = [
+        "xcode", "atom-one-light", "github", "vs",
+        "tomorrow", "solarized-light", "gruvbox-light",
+    ]
+
+    private init() {
+        self.lightTheme = UserDefaults.standard.string(forKey: Self.lightThemeKey) ?? "xcode"
+        self.darkTheme = UserDefaults.standard.string(forKey: Self.darkThemeKey) ?? "atom-one-dark"
+        self.availableThemes = Highlightr()?.availableThemes().sorted() ?? []
+    }
+
+    /// Returns the appropriate theme for the current system appearance
+    func currentTheme(for appearance: NSAppearance?) -> String {
+        let isDark = appearance?.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+        return isDark ? darkTheme : lightTheme
+    }
+}
+
 /// A SwiftUI wrapper around NSTextView with Highlightr syntax highlighting.
 /// Supports editing and re-highlights on text changes.
 struct SyntaxHighlightEditor: NSViewRepresentable {
     @Binding var text: String
     let language: String // "xml" for plist, "yaml" for yaml
+    let themeName: String
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -42,6 +90,7 @@ struct SyntaxHighlightEditor: NSViewRepresentable {
 
         context.coordinator.textView = textView
         context.coordinator.currentLanguage = language
+        context.coordinator.currentTheme = themeName
         context.coordinator.setupHighlightr()
         context.coordinator.applyHighlighting(text)
 
@@ -56,8 +105,11 @@ struct SyntaxHighlightEditor: NSViewRepresentable {
         if context.coordinator.isUpdating { return }
         let currentText = textView.string
         let languageChanged = context.coordinator.currentLanguage != language
-        if currentText != text || languageChanged {
+        let themeChanged = context.coordinator.currentTheme != themeName
+        if currentText != text || languageChanged || themeChanged {
             context.coordinator.currentLanguage = language
+            context.coordinator.currentTheme = themeName
+            context.coordinator.setupHighlightr()
             context.coordinator.applyHighlighting(text)
         }
     }
@@ -69,6 +121,7 @@ struct SyntaxHighlightEditor: NSViewRepresentable {
         var highlightr: Highlightr?
         var isUpdating = false
         var currentLanguage: String = ""
+        var currentTheme: String = ""
         private var highlightWork: DispatchWorkItem?
 
         init(_ parent: SyntaxHighlightEditor) {
@@ -76,8 +129,10 @@ struct SyntaxHighlightEditor: NSViewRepresentable {
         }
 
         func setupHighlightr() {
-            highlightr = Highlightr()
-            highlightr?.setTheme(to: "xcode")
+            if highlightr == nil {
+                highlightr = Highlightr()
+            }
+            highlightr?.setTheme(to: currentTheme)
         }
 
         func applyHighlighting(_ text: String) {
@@ -94,6 +149,11 @@ struct SyntaxHighlightEditor: NSViewRepresentable {
                 let fullRange = NSRange(location: 0, length: mutable.length)
                 mutable.addAttribute(.font, value: NSFont.monospacedSystemFont(ofSize: 12, weight: .regular), range: fullRange)
                 textView.textStorage?.setAttributedString(mutable)
+
+                // Apply theme background color to the text view
+                if let bgColor = highlightr.theme?.themeBackgroundColor {
+                    textView.backgroundColor = bgColor
+                }
             } else {
                 textView.string = text
             }

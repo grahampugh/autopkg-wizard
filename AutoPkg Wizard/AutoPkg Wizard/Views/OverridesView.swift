@@ -4,6 +4,7 @@ struct OverridesView: View {
     @State private var viewModel = OverridesViewModel()
     @State private var isEditing = false
     @State private var selectedOverrides: Set<String> = []
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         HSplitView {
@@ -191,7 +192,10 @@ struct OverridesView: View {
                         language: OverrideFileType.detect(
                             fileName: override.fileName,
                             content: viewModel.selectedOverrideContents
-                        ).highlightrLanguage
+                        ).highlightrLanguage,
+                        themeName: SyntaxThemeManager.shared.currentTheme(
+                            for: colorScheme == .dark ? NSAppearance(named: .darkAqua) : NSAppearance(named: .aqua)
+                        )
                     )
                     .id(override.id)
                     .clipShape(RoundedRectangle(cornerRadius: 6))
