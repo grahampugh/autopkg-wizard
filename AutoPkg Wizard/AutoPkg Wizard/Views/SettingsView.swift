@@ -7,6 +7,7 @@ struct SettingsView: View {
     @State private var overridesDirectory: String = AutoPkgCLI.shared.overridesDirectory
     @State private var isSaved = false
 
+    @Bindable private var themeManager = SyntaxThemeManager.shared
     private var cli = AutoPkgCLI.shared
 
     var body: some View {
@@ -14,10 +15,13 @@ struct SettingsView: View {
             generalTab
                 .tabItem { Label("General", systemImage: "gear") }
 
+            editorTab
+                .tabItem { Label("Editor", systemImage: "paintbrush") }
+
             aboutTab
                 .tabItem { Label("About", systemImage: "info.circle") }
         }
-        .frame(width: 500, height: 320)
+        .frame(width: 500, height: 380)
     }
 
     // MARK: - General Tab
@@ -113,6 +117,51 @@ struct SettingsView: View {
                         }
                     }
                     .buttonStyle(.borderedProminent)
+                }
+            }
+        }
+        .formStyle(.grouped)
+        .padding()
+    }
+
+    // MARK: - Editor Tab
+
+    private var editorTab: some View {
+        Form {
+            Section("Light Mode Theme") {
+                Picker("Theme", selection: $themeManager.lightTheme) {
+                    ForEach(themeManager.availableThemes, id: \.self) { theme in
+                        Text(theme).tag(theme)
+                    }
+                }
+                .labelsHidden()
+
+                if !SyntaxThemeManager.recommendedLightThemes.contains(themeManager.lightTheme) {
+                    Text("Recommended: \(SyntaxThemeManager.recommendedLightThemes.sorted().joined(separator: ", "))")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Section("Dark Mode Theme") {
+                Picker("Theme", selection: $themeManager.darkTheme) {
+                    ForEach(themeManager.availableThemes, id: \.self) { theme in
+                        Text(theme).tag(theme)
+                    }
+                }
+                .labelsHidden()
+
+                if !SyntaxThemeManager.recommendedDarkThemes.contains(themeManager.darkTheme) {
+                    Text("Recommended: \(SyntaxThemeManager.recommendedDarkThemes.sorted().joined(separator: ", "))")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Section {
+                Button("Restore Defaults") {
+                    themeManager.lightTheme = "xcode"
+                    themeManager.darkTheme = "atom-one-dark"
                 }
             }
         }
