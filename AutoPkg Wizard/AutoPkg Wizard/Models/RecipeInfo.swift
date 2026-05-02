@@ -49,6 +49,53 @@ enum InputValue: Equatable {
         default: return false
         }
     }
+
+    // MARK: - Plist / YAML round-trip
+
+    /// Create an `InputValue` from a Foundation object (plist or YAML decoded).
+    static func from(any value: Any) -> InputValue {
+        // Check Bool before numeric types since NSNumber bridges both
+        if let nsNumber = value as? NSNumber {
+            if CFBooleanGetTypeID() == CFGetTypeID(nsNumber) {
+                return .bool(nsNumber.boolValue)
+            }
+        }
+        switch value {
+        case let s as String:
+            return .string(s)
+        case let i as Int:
+            return .integer(i)
+        case let d as Double:
+            if d == d.rounded(.towardZero) && !d.isNaN && !d.isInfinite && abs(d) < Double(Int.max) {
+                return .integer(Int(d))
+            }
+            return .float(d)
+        case let arr as [Any]:
+            return .list(arr.map { from(any: $0) })
+        case let dict as [String: Any]:
+            let entries = dict.sorted { $0.key < $1.key }
+                .map { (key: $0.key, value: from(any: $0.value)) }
+            return .dict(entries)
+        default:
+            return .string(String(describing: value))
+        }
+    }
+
+    /// Convert back to a Foundation object suitable for plist/YAML serialization.
+    func toAny() -> Any {
+        switch self {
+        case .string(let s): return s
+        case .bool(let b): return b
+        case .integer(let i): return i
+        case .float(let d): return d
+        case .none: return ""
+        case .list(let items): return items.map { $0.toAny() }
+        case .dict(let entries):
+            var dict: [String: Any] = [:]
+            for entry in entries { dict[entry.key] = entry.value.toAny() }
+            return dict
+        }
+    }
 }
 
 /// Parsed representation of `autopkg info <recipe>` output.

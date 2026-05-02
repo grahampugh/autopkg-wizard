@@ -572,13 +572,16 @@ struct InputValueRow: View {
         case .string(let s) where s.contains("\n"):
             VStack(alignment: .leading, spacing: 2) {
                 Text(label).font(.caption).foregroundStyle(.secondary)
-                Text(s)
-                    .font(.system(.caption, design: .monospaced))
-                    .textSelection(.enabled)
-                    .padding(6)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color(nsColor: .controlBackgroundColor))
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                ScrollView {
+                    Text(s)
+                        .font(.system(.caption, design: .monospaced))
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .padding(6)
+                .frame(maxHeight: min(CGFloat(s.components(separatedBy: "\n").count + 1) * 14, 200))
+                .background(Color(nsColor: .controlBackgroundColor))
+                .clipShape(RoundedRectangle(cornerRadius: 4))
             }
         default:
             VStack(alignment: .leading, spacing: 2) {
