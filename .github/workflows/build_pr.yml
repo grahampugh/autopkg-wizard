@@ -2,7 +2,7 @@ name: Build, sign, and notarize pull requests
 
 on:
   pull_request_target:
-    types: [labeled]
+    types: [ labeled ]
 
 jobs:
   build:
@@ -34,7 +34,7 @@ jobs:
           xcodebuild \
             -project "AutoPkg Wizard/AutoPkg Wizard.xcodeproj" \
             -scheme "AutoPkg Wizard" \
-            -configuration Release \
+            -configuration Release ARCHS="arm64 x86_64" ONLY_ACTIVE_ARCH=NO \
             -destination "platform=macOS" \
             SYMROOT="$(pwd)/.build" \
             build

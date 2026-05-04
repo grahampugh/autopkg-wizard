@@ -3,12 +3,12 @@ name: Build, sign, and notarize on push to main
 on:
   push:
     branches:
-    - main
+      - main
     paths-ignore:
-    - '.github/**'
-    - 'images/**'
-    - '**/CHANGELOG.md'
-    - '**/README.md'
+      - ".github/**"
+      - "images/**"
+      - "**/CHANGELOG.md"
+      - "**/README.md"
 
 jobs:
   build:
@@ -39,7 +39,7 @@ jobs:
           xcodebuild \
             -project "AutoPkg Wizard/AutoPkg Wizard.xcodeproj" \
             -scheme "AutoPkg Wizard" \
-            -configuration Release \
+            -configuration Release ARCHS="arm64 x86_64" ONLY_ACTIVE_ARCH=NO \
             -destination "platform=macOS" \
             SYMROOT="$(pwd)/.build" \
             build
